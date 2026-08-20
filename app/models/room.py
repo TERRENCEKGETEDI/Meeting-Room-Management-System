@@ -2,7 +2,7 @@
 
 from app.database.database import Base
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, CheckConstraint
 
 
 class Room(Base):
@@ -21,11 +21,16 @@ class Room(Base):
         primary_key=True
     )
     name: Mapped[str] = mapped_column(
-        String
+        String,
+        unique=True
     )
     floor: Mapped[str] = mapped_column(
         String
     )
     capacity: Mapped[int] = mapped_column(
-        Integer
+        Integer,
+        CheckConstraint(
+            "capacity>0",
+            name="ck_capacity"
+        )
     )
