@@ -1,9 +1,7 @@
 from fastapi import FastAPI
-
-from app.database.database import Base
 from app.routes import delete
-from app.database.database import engine
-
+from app.routes import edit_room
+from app.database.database import Base, engine
 
 app = FastAPI()
 
@@ -12,3 +10,4 @@ Base.metadata.create_all(bind=engine)
 
 # adding the routes
 app.include_router(delete.router)
+app.include_router(edit_room.router)
