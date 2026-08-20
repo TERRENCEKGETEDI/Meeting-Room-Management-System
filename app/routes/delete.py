@@ -9,7 +9,7 @@ from app.models.room import Room
 from app.schemas.room import RoomDelete
 
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/room", tags=["Room"])
 
 
 @router.delete("/")
