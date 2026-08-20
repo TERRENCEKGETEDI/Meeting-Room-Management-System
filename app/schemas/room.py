@@ -11,7 +11,7 @@ class RoomCreate(BaseModel):
 
     name: str
     floor: str
-    apacity: int
+    capacity: int
 
 
 class RoomResponse(BaseModel):
