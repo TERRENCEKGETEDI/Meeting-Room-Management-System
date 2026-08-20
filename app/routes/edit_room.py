@@ -9,7 +9,7 @@ router = APIRouter(
     tags=["Rooms"]
 )
 
-@router.put("/{id}")
+@router.put("/")
 def edit_room(room_edit: RoomEdit):
 
     """
@@ -35,7 +35,7 @@ def edit_room(room_edit: RoomEdit):
         user_result.capacity=room_edit.capacity
     if room_edit.floor is not None:
             user_result.floor=room_edit.floor
-            
+
     session.commit()
     session.refresh(user_result)
 
