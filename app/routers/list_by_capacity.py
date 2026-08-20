@@ -5,12 +5,22 @@ from sqlalchemy import select
 from app.schemas.room import RoomResponse
 
 
-room_router = APIRouter(
+list_by_capacity_router = APIRouter(
     prefix="/rooms", tags=["rooms"]
     )
 
-@room_router.get("/",response_model=list[RoomResponse])
-def list_rooms_by_capacity(capacity:int, room):
+@list_by_capacity_router.get("/",response_model=list[RoomResponse])
+def list_rooms_by_capacity(capacity: int):
+    """
+    Get a list of rooms filtered by minimum capacity.
+
+    Args:
+        capacity (int): Minimum room capacity to filter by.
+
+    Returns:
+        A list of rooms that meet the minimum capacity requirement.
+    """
+    
     stmt= select(Room).where(Room.capacity >=capacity)
     result=session.execute(stmt)
     rooms=result.scalars().all()
