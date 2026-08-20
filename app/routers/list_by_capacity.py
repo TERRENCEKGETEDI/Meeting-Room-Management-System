@@ -21,7 +21,7 @@ def list_rooms_by_capacity(capacity: int):
         A list of rooms that meet the minimum capacity requirement.
     """
     
-    stmt= select(Room).where(Room.capacity >=capacity)
+    stmt= select(Room).where(Room.capacity >= capacity)
     result=session.execute(stmt)
     rooms=result.scalars().all()
     
