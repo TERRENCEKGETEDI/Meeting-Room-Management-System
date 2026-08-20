@@ -25,15 +25,16 @@ def delete_room(
     Returns:
         message: Room deleted or Room not found if room doesn't exist
     """
-    session = SessionLocal()
-    stmt = select(Room).where(
-        Room.id == room_id.id
-    )
-    room = session.scalars(stmt).first()
-    if room is None:
-        return {"message": "Room not found"}
+    with SessionLocal() as session:
+        # session = SessionLocal()
+        stmt = select(Room).where(
+            Room.id == room_id.id
+        )
+        room = session.scalars(stmt).first()
+        if room is None:
+            return {"message": "Room not found"}
 
-    session.delete(room)
-    session.commit()
+        session.delete(room)
+        session.commit()
 
-    return {"message": "Room deleted"}
+        return {"message": "Room deleted"}
