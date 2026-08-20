@@ -1,9 +1,9 @@
-from sqlalchemy import select
+from fastapi import FastAPI
+from app.routes import edit_room
+from app.database.database import Base, engine
 
-from app.database.database import SessionLocal
-from .models.room import Room
+app = FastAPI()
 
+app.include_router(edit_room.router)
 
-with SessionLocal() as session:
-    stmt = select(Room)
-    room = session.scalars(stmt)
+Base.metadata.create_all(bind=engine)
