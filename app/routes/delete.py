@@ -6,14 +6,15 @@ from fastapi import APIRouter
 
 from app.database.database import SessionLocal
 from app.models.room import Room
+from app.schemas.room import RoomDelete
 
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.delete("/{id}")
+@router.delete("/")
 def delete_room(
-    id: int
+    room_id: RoomDelete
 ) -> dict[str, str]:
     """
     Delete room route
@@ -26,7 +27,7 @@ def delete_room(
     """
     session = SessionLocal()
     stmt = select(Room).where(
-        Room.id == id
+        Room.id == room_id.id
     )
     room = session.scalars(stmt).first()
     if room is None:
