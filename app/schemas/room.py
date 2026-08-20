@@ -9,12 +9,9 @@ class RoomCreate(BaseModel):
     data to create a new room
     """
 
-    user_id: int
-    room_name: str
+    name: str
     floor: str
-    room_capacity: int
-    is_available: bool
-    location_id: int
+    apacity: int
 
 
 class RoomResponse(BaseModel):
@@ -24,9 +21,6 @@ class RoomResponse(BaseModel):
     """
 
     id: int
-    user_id: int
-    room_name: str
+    name: str
     floor: str
-    room_capacity: int
-    is_available: bool
-    location_id: int
+    capacity: int
