@@ -6,7 +6,6 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 load_dotenv()
 
-
 DATABASE_URL = (
     f"postgresql+psycopg://{os.getenv('DB_USER')}:"
     f"{os.getenv('DB_PASSWORD')}@"

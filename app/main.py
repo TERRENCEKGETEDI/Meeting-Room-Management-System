@@ -8,7 +8,7 @@ app = FastAPI()
 # create the tables
 Base.metadata.create_all(bind=engine)
 
-# adding the routes
+# adding the routes 
 app.include_router(add_room.router)
 app.include_router(delete.router)
 app.include_router(edit_room.router)

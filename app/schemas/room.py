@@ -8,7 +8,6 @@ class RoomCreate(BaseModel):
     Defines the fields required when a client submits
     data to create a new room
     """
-
     name: str
     floor: str
     capacity: int
