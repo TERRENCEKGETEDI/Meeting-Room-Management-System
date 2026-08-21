@@ -1,17 +1,6 @@
 from pydantic import BaseModel
 
 
-class RoomDelete(BaseModel):
-    """
-    Schema for deleting a room
-
-    Attributes:
-        id: recieved
-    """
-
-    id: int
-
-
 class RoomCreate(BaseModel):
     """
     Schema for creating a new room
