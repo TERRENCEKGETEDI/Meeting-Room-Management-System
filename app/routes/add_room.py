@@ -1,9 +1,8 @@
 from fastapi import APIRouter
-
-from database import SessionLocal
 from models.room import Room
 from schemas.room import RoomCreate, RoomResponse
 
+from app.database.database import SessionLocal
 
 # Create a router for room-related endpoints
 router = APIRouter(

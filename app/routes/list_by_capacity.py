@@ -1,10 +1,9 @@
 from fastapi import APIRouter
 from sqlalchemy import select
 
-from app.models.room import Room
 from app.database.database import SessionLocal
+from app.models.room import Room
 from app.schemas.room import RoomResponse
-
 
 list_by_capacity_router = APIRouter(
     prefix="/list",
@@ -26,7 +25,6 @@ def list_rooms_by_capacity(
     Returns:
         A list of rooms that meet the minimum capacity requirement.
     """
-
 
     with SessionLocal() as session:
         stmt = select(Room).where(Room.capacity >= capacity)
