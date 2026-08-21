@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from schemas.room import RoomCreate, RoomResponse
+from app.schemas.room import RoomCreate, RoomResponse
 
 from app.database.database import SessionLocal
 from app.models.room import Room
