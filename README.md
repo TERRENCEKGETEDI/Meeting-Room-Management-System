@@ -10,18 +10,23 @@
 - sqlalchemy.
 
 
-### Project Structure
+## Project Structure
+
+```text
 Meeting Room Management System
-|--app/
-|   |--main.py
-|   |--models/
-|   |--schemas/
-|   |--routes/
-|   |--database/
-|--.env
-|--.gitignore
-|--requirements.txt
-|--README.md
+│
+├── app/
+│   ├── main.py
+│   ├── models/
+│   ├── schemas/
+│   ├── routes/
+│   └── database/
+│
+├── .env
+├── .gitignore
+├── requirements.txt
+└── README.md
+```
 
 ### Installation
 - clone/download the project
