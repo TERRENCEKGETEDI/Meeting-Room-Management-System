@@ -20,7 +20,7 @@ def list_rooms_by_capacity(
     Get a list of rooms filtered by minimum capacity.
 
     Args:
-        capacity (int): Minimum room capacity to filter by.
+        capacity: Minimum room capacity to filter by.
 
 
     Returns:

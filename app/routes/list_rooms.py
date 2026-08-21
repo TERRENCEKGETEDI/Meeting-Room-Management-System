@@ -18,9 +18,6 @@ def list_all_rooms():
     """
     Get a list of all rooms.
 
-    Args:
-        db (Session): Database session.
-
     Returns:
         A list of all rooms.
     """
