@@ -8,7 +8,7 @@ from app.schemas.room import RoomResponse
 
 list_by_capacity_router = APIRouter(
     prefix="/list",
-    tags=["List Room by Capacity"],
+    tags=["Rooms"],
 )
 
 
