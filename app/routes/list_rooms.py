@@ -1,11 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from sqlalchemy import select
-from sqlalchemy.orm import Session
 
-from app.models.room import Room
 from app.database.database import SessionLocal
+from app.models.room import Room
 from app.schemas.room import RoomResponse
-
 
 list_router = APIRouter(
     prefix="/list",
