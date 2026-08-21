@@ -32,5 +32,6 @@ def list_rooms_by_capacity(
         stmt = select(Room).where(Room.capacity >= capacity)
         result = session.execute(stmt)
         rooms = result.scalars().all()
-
+        if rooms is None:
+            return []
         return rooms

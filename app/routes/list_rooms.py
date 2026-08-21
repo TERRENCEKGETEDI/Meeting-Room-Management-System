@@ -25,5 +25,6 @@ def list_all_rooms():
         stmt = select(Room)
         result = session.execute(stmt)
         rooms = result.scalars().all()
-
+        if rooms is None:
+            return []
         return rooms
