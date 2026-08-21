@@ -9,7 +9,7 @@ from app.models.room import Room
 router = APIRouter(prefix="/room", tags=["Rooms"])
 
 
-@router.delete("/")
+@router.delete("/{room_id}")
 def delete_room(
     room_id: int
 ) -> dict[str, str]:
@@ -17,7 +17,7 @@ def delete_room(
     Delete room route
 
     Args:
-        id: the id of the room
+        room_id: the id of the room
 
     Returns:
         message: Room deleted or Room not found if room doesn't exist
