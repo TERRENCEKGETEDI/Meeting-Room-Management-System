@@ -1,34 +1,30 @@
-"""Delete route"""
-
-from sqlalchemy import select
+"""Delete room route"""
 
 from fastapi import APIRouter
+from sqlalchemy import select
 
 from app.database.database import SessionLocal
 from app.models.room import Room
-from app.schemas.room import RoomDelete
 
-
-router = APIRouter(prefix="/room", tags=["Room"])
+router = APIRouter(prefix="/room", tags=["Rooms"])
 
 
 @router.delete("/")
 def delete_room(
-    room_id: RoomDelete
+    room_id: int
 ) -> dict[str, str]:
     """
     Delete room route
 
     Args:
         id: the id of the room
-        session: the database session
+
     Returns:
         message: Room deleted or Room not found if room doesn't exist
     """
     with SessionLocal() as session:
-        # session = SessionLocal()
         stmt = select(Room).where(
-            Room.id == room_id.id
+            Room.id == room_id
         )
         room = session.scalars(stmt).first()
         if room is None:
