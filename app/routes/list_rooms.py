@@ -9,7 +9,7 @@ from app.schemas.room import RoomResponse
 
 list_router = APIRouter(
     prefix="/list",
-    tags=["List"]
+    tags=["Rooms"]
 )
 
 
