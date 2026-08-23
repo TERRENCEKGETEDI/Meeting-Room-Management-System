@@ -1,35 +1,41 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query ,  HTTPException
 from sqlalchemy import select
 
 from app.database.database import SessionLocal
 from app.models.room import Room
 from app.schemas.room import RoomResponse
 
-list_by_capacity_router = APIRouter(
-    prefix="/list",
+router = APIRouter(
+    prefix="/rooms",
     tags=["Rooms"],
 )
 
 
-@list_by_capacity_router.get("/by_capacity/", response_model=list[RoomResponse])
+@router.get("/min_capacity", response_model=list[RoomResponse])
 def list_rooms_by_capacity(
-    capacity: int
+    min_capacity: int = Query(gt=0)
 ):
     """
     Get a list of rooms filtered by minimum capacity.
 
     Args:
-        capacity: Minimum room capacity to filter by.
-
+        min_capacity: Minimum room capacity to filter by.
+        It must be an integer and it must be greater than 0."
 
     Returns:
         A list of rooms that meet the minimum capacity requirement.
     """
 
     with SessionLocal() as session:
-        stmt = select(Room).where(Room.capacity >= capacity)
+        stmt = select(Room).where(Room.capacity >= min_capacity)
         result = session.execute(stmt)
         rooms = result.scalars().all()
-        if rooms is None:
-            return []
+        
+        
+        if not rooms:
+            raise HTTPException(
+                status_code=404,
+                detail="No rooms found with the requested capacity"
+            )
+
         return rooms

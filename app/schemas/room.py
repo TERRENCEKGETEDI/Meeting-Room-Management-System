@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class RoomCreate(BaseModel):
@@ -8,9 +8,9 @@ class RoomCreate(BaseModel):
     Defines the fields required when a client submits
     data to create a new room
     """
-    name: str
-    floor: str
-    capacity: int
+    name: str = Field(min_length=1)
+    floor: str = Field(min_length=1)
+    capacity: int = Field(gt=0)
 
 
 class RoomResponse(BaseModel):
@@ -32,7 +32,7 @@ class RoomEdit(BaseModel):
     Redefines the fields that the client wants to change
 
     """
-    id: int
-    name: str | None = None
-    floor: str | None = None
-    capacity: int | None = None
+    # Fields are optional for partial updates; if provided, name/floor can't be empty and capacity must be > 0
+    name: str | None = Field(default=None, min_length=1)
+    floor: str | None = Field(default=None, min_length=1)
+    capacity: int | None = Field(default=None, gt=0)
