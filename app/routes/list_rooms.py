@@ -1,17 +1,17 @@
-from fastapi import APIRouter
+from fastapi import APIRouter,HTTPException
 from sqlalchemy import select
 
 from app.database.database import SessionLocal
 from app.models.room import Room
 from app.schemas.room import RoomResponse
 
-list_router = APIRouter(
-    prefix="/list",
+router: APIRouter = APIRouter(
+    prefix="/rooms",
     tags=["Rooms"]
 )
 
 
-@list_router.get("/", response_model=list[RoomResponse])
+@router.get("/", response_model=list[RoomResponse])
 def list_all_rooms():
     """
     Get a list of all rooms.
@@ -23,6 +23,4 @@ def list_all_rooms():
         stmt = select(Room)
         result = session.execute(stmt)
         rooms = result.scalars().all()
-        if rooms is None:
-            return []
         return rooms
