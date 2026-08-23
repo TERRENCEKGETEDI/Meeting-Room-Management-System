@@ -1,8 +1,9 @@
 """SQLAlchemy model for Room"""
 
-from app.database.database import Base
+from sqlalchemy import CheckConstraint, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, String, CheckConstraint
+
+from app.database.database import Base
 
 
 class Room(Base):
@@ -22,15 +23,18 @@ class Room(Base):
     )
     name: Mapped[str] = mapped_column(
         String,
-        unique=True
+        unique=True,
+        nullable=False
     )
     floor: Mapped[str] = mapped_column(
-        String
+        String,
+        nullable=False
     )
     capacity: Mapped[int] = mapped_column(
         Integer,
         CheckConstraint(
             "capacity>0",
             name="ck_capacity"
-        )
+        ),
+        nullable=False
     )
