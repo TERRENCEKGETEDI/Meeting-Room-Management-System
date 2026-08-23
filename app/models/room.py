@@ -15,6 +15,7 @@ class Room(Base):
         name: the name of the room
         floor: the floor which the room is
         capacity: max number of staff the room can hold
+        
     """
     __tablename__ = "room"
     id: Mapped[int] = mapped_column(
