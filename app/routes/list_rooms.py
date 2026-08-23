@@ -23,4 +23,13 @@ def list_all_rooms():
         stmt = select(Room)
         result = session.execute(stmt)
         rooms = result.scalars().all()
+        
+        
+        if not rooms  :
+            raise HTTPException(
+                status_code=404,
+                detail="No rooms found"
+            )
+
         return rooms
+        
