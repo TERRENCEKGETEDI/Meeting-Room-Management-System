@@ -9,8 +9,8 @@ class RoomCreate(BaseModel):
     data to create a new room
     """
     name: str = Field(min_length=1)
-    floor: Field(min_length=1)
-    capacity: Field(gt=0)
+    floor: str = Field(min_length=1)
+    capacity: int = Field(gt=0)
 
 
 class RoomResponse(BaseModel):
