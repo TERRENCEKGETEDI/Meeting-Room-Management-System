@@ -1,7 +1,8 @@
 """Delete room route"""
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
 from app.database.database import SessionLocal
 from app.models.room import Room
@@ -28,9 +29,18 @@ def delete_room(
         )
         room = session.scalars(stmt).first()
         if room is None:
-            return {"message": "Room not found"}
-
-        session.delete(room)
-        session.commit()
+            raise HTTPException(
+                status_code=404,
+                detail="Room not Found"
+            )
+        try:
+            session.delete(room)
+            session.commit()
+        except IntegrityError:
+            session.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail="Failed to delete room, room might be linked to other tables, try again"
+            )
 
         return {"message": "Room deleted"}
