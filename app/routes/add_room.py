@@ -1,8 +1,9 @@
-from fastapi import APIRouter
-from app.schemas.room import RoomCreate, RoomResponse
+from fastapi import APIRouter, HTTPException
 
+from app.schemas.room import RoomCreate, RoomResponse
 from app.database.database import SessionLocal
 from app.models.room import Room
+
 
 # Create a router for room-related endpoints
 router = APIRouter(
@@ -23,21 +24,28 @@ def add_room(room: RoomCreate):
     # Open a database session
     with SessionLocal() as db:
 
-        # Create a new Room object using the data from the request
-        new_room = Room(
-            name=room.name,
-            floor=room.floor,
-            capacity=room.capacity
-        )
+        try:
+            # Create a new Room object using the data from the request
+            new_room = Room(
+                name=room.name,
+                floor=room.floor,
+                capacity=room.capacity
+            )
 
-        # Add the new room to the database session
-        db.add(new_room)
+            db.add(new_room)
 
-        # Save the new room to the database
-        db.commit()
+            db.commit()
 
-        # Refresh the object to get the generated database ID
-        db.refresh(new_room)
+            db.refresh(new_room)
 
-        # Return the newly created room
-        return new_room
+            return new_room
+
+        except Exception:
+            # Undo any changes if an error occurs
+            db.rollback()
+
+        
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to create room"
+            )
