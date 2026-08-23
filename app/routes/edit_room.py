@@ -1,15 +1,14 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
-
+from sqlalchemy.exc import IntegrityError
 from app.database.database import SessionLocal
 from app.models.room import Room
 from app.schemas.room import RoomEdit
 
-router = APIRouter(prefix="/edit-room", tags=["Rooms"])
+router = APIRouter(prefix="/room", tags=["Rooms"])
 
-
-@router.put("/")
-def edit_room(room_edit: RoomEdit):
+@router.put("/{room_id}")
+def edit_room(room_id: int,room_edit: RoomEdit):
     """
     Edits the the details the room
 
@@ -21,20 +20,32 @@ def edit_room(room_edit: RoomEdit):
     """
     with SessionLocal() as session:
 
-        stmt = select(Room).where(Room.id == room_edit.id)
+        stmt = select(Room).where(Room.id == room_id)
         user_result = session.scalars(stmt).first()
 
         if user_result is None:
-            return {"message": "The id is not found"}
-
+           raise HTTPException(
+               status_code=404,
+               detail="The room id does not exist"
+           )
+        
         if room_edit.name is not None:
             user_result.name = room_edit.name
         if room_edit.capacity is not None:
             user_result.capacity = room_edit.capacity
         if room_edit.floor is not None:
             user_result.floor = room_edit.floor
+        try:
 
-        session.commit()
-        session.refresh(user_result)
+            session.commit()
+            session.refresh(user_result)
+        except IntegrityError:
+            session.rollback()
+
+            raise HTTPException(
+                status_code=400,
+                detail="Could not update the room"
+            )
+
 
         return user_result
