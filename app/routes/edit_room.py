@@ -7,7 +7,6 @@ from app.schemas.room import RoomEdit
 
 router = APIRouter(prefix="/room", tags=["Rooms"])
 
-
 @router.put("/{room_id}")
 def edit_room(room_id: int,room_edit: RoomEdit):
     """
