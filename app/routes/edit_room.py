@@ -47,4 +47,5 @@ def edit_room(room_id: int,room_edit: RoomEdit):
                 detail="Could not update the room"
             )
 
+
         return user_result
