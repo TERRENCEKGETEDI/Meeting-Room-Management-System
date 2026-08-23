@@ -56,7 +56,7 @@ Meeting Room Management System
 
 ### Usage
 ```bash
-    uvicorn app.main:main --reload
+    uvicorn app.main:app --reload
 ```
 - and visit the broswer at:
 ```bash
