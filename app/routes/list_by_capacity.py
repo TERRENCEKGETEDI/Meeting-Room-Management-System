@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.get("/list_by_capacity", response_model=list[RoomResponse])
+@router.get("/list", response_model=list[RoomResponse])
 def list_rooms_by_capacity(
     min_capacity: int = Query(gt=0)
 ):
