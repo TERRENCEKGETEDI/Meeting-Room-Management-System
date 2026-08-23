@@ -18,6 +18,12 @@ def edit_room(room_id: int,room_edit: RoomEdit):
     Return:
     returns the rooms details
     """
+    if room_edit.floor is None and room_edit.name is None and room_edit.capacity is None:
+       raise HTTPException(
+           status_code=400,
+           detail="No details provdided"
+       )
+
     with SessionLocal() as session:
 
         stmt = select(Room).where(Room.id == room_id)
@@ -29,14 +35,17 @@ def edit_room(room_id: int,room_edit: RoomEdit):
                detail="The room id does not exist"
            )
         
+        if user_result.name == room_edit.name and user_result.capacity == room_edit.capacity and user_result.floor == room_edit.floor:
+            return{"message":"no changes made"}
+        
         if room_edit.name is not None:
             user_result.name = room_edit.name
         if room_edit.capacity is not None:
             user_result.capacity = room_edit.capacity
         if room_edit.floor is not None:
             user_result.floor = room_edit.floor
-        try:
 
+        try:
             session.commit()
             session.refresh(user_result)
         except IntegrityError:
@@ -46,6 +55,5 @@ def edit_room(room_id: int,room_edit: RoomEdit):
                 status_code=400,
                 detail="Could not update the room"
             )
-
 
         return user_result
