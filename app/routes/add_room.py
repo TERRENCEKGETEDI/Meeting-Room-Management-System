@@ -16,7 +16,7 @@ router = APIRouter(
 @router.post(
     "/",
     response_model=RoomResponse,
-    status_code=status.HTTP_201_CREATED
+    status_code=201
 )
 def add_room(room: RoomCreate):
     """
