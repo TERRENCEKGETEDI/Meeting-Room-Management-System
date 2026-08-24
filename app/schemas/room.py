@@ -21,7 +21,7 @@ class RoomResponse(BaseModel):
     Attributes:
         id: Primary Key
         name: the name of the room
-        floor: the floor which the room is
+        floor: the floor in which the room is
         capacity: max number of staff the room can hold
     """
 
@@ -39,7 +39,7 @@ class RoomEdit(BaseModel):
 
     Attributes:
         name: the name of the room
-        floor: the floor which the room is
+        floor: the floor in which the room is
         capacity: max number of staff the room can hold
     """
     # Fields are optional for partial updates; if provided, name/floor can't be empty and capacity must be > 0

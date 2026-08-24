@@ -1,11 +1,14 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 from sqlalchemy import select
 
 from app.database.database import SessionLocal
 from app.models.room import Room
 from app.schemas.room import RoomResponse
 
-router: APIRouter = APIRouter(prefix="/rooms", tags=["Rooms"])
+router: APIRouter = APIRouter(
+    prefix="/rooms",
+    tags=["Rooms"]
+    )
 
 
 @router.get("/", response_model=list[RoomResponse])
