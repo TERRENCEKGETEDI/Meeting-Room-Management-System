@@ -20,19 +20,20 @@ router = APIRouter(
 )
 def add_room(room: RoomCreate):
     """
-    Create a new meeting room.
+        Create a new meeting room.
 
-    Receives room details, saves the room to the database,
-    and returns the created room.
+    Args:
+       room: room details
+    Returns:
+        new_room:The created room 
     """
-    # Remove leading and trailing whitespace
     stripped_name = room.name.strip()
     stripped_floor = room.floor.strip()
 
     if not stripped_name or not stripped_floor:
         raise HTTPException(
             status_code=400,
-            detail="Room name and floor cannot be empty"
+            detail="Room name or floor cannot be empty"
         )
 
     with SessionLocal() as db:
