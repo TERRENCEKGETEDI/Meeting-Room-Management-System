@@ -5,8 +5,10 @@ class RoomCreate(BaseModel):
     """
     Schema for creating a new room
 
-    Defines the fields required when a client submits
-    data to create a new room
+    Attributes:
+        name: the name of the room
+        floor: the floor in which the room is
+        capacity: max number of staff the room can hold
     """
     name: str = Field(min_length=1)
     floor: str = Field(min_length=1)
@@ -16,7 +18,11 @@ class RoomCreate(BaseModel):
 class RoomResponse(BaseModel):
     """
     Schema for returning Room data in API responses
-
+    Attributes:
+        id: Primary Key
+        name: the name of the room
+        floor: the floor which the room is
+        capacity: max number of staff the room can hold
     """
 
     id: int
@@ -31,6 +37,10 @@ class RoomEdit(BaseModel):
 
     Redefines the fields that the client wants to change
 
+    Attributes:
+        name: the name of the room
+        floor: the floor which the room is
+        capacity: max number of staff the room can hold
     """
     # Fields are optional for partial updates; if provided, name/floor can't be empty and capacity must be > 0
     name: str | None = Field(default=None, min_length=1)
