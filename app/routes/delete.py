@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from app.database.database import SessionLocal
 from app.models.room import Room
 
-router = APIRouter(prefix="/room", tags=["Rooms"])
+router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
 
 @router.delete("/{room_id}")
