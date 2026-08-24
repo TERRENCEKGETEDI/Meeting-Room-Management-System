@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 
 from app.schemas.room import RoomCreate, RoomResponse
@@ -6,26 +6,41 @@ from app.database.database import SessionLocal
 from app.models.room import Room
 
 
+# Create a router for room-related endpoints
 router = APIRouter(
     prefix="/rooms",
     tags=["Rooms"]
 )
 
 
-@router.post("/", response_model=RoomResponse)
+@router.post(
+    "/",
+    response_model=RoomResponse,
+    status_code=201
+)
 def add_room(room: RoomCreate):
     """
-    Create a new meeting room.
+        Create a new meeting room.
 
-    Receives room details from the client, saves the new room
-    to the database, and returns the created room.
+    Args:
+       room: room details
+    Returns:
+        new_room:The created room 
     """
+    stripped_name = room.name.strip()
+    stripped_floor = room.floor.strip()
+
+    if not stripped_name or not stripped_floor:
+        raise HTTPException(
+            status_code=400,
+            detail="Room name or floor cannot be empty"
+        )
 
     with SessionLocal() as db:
         try:
             new_room = Room(
-                name=room.name,
-                floor=room.floor,
+                name= stripped_name,
+                floor = stripped_floor,
                 capacity=room.capacity
             )
 
