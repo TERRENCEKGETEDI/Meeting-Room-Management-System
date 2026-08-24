@@ -25,12 +25,11 @@ def add_room(room: RoomCreate):
     Receives room details, saves the room to the database,
     and returns the created room.
     """
-
     # Remove leading and trailing whitespace
-    name = room.name.strip()
-    floor = room.floor.strip()
+    stripped_name = room.name.strip()
+    stripped_floor = room.floor.strip()
 
-    if not name or not floor:
+    if not stripped_name or not stripped_floor:
         raise HTTPException(
             status_code=400,
             detail="Room name and floor cannot be empty"
@@ -39,8 +38,8 @@ def add_room(room: RoomCreate):
     with SessionLocal() as db:
         try:
             new_room = Room(
-                name=name,
-                floor=floor,
+                name= stripped_name,
+                floor = stripped_floor,
                 capacity=room.capacity
             )
 
