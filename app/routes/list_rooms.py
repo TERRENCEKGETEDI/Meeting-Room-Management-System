@@ -1,4 +1,4 @@
-from fastapi import APIRouter,HTTPException
+from fastapi import APIRouter,HTTPException , Query
 from sqlalchemy import select
 
 from app.database.database import SessionLocal
@@ -12,24 +12,28 @@ router: APIRouter = APIRouter(
 
 
 @router.get("/", response_model=list[RoomResponse])
-def list_all_rooms():
+def list_all_rooms(
+     min_capacity: int | None = Query(default=None, gt=0)
+):
     """
-    Get a list of all rooms.
+    Get a list of all rooms. Optionally filtered by minimum capacity
+
+    Args: 
+        min_capacity: Optional minimum room capacity
+                      It must be greater than 0
 
     Returns:
-        A list of all rooms.
+        A list of all rooms , filtered by minimum capacity if provided
     """
     with SessionLocal() as session:
         stmt = select(Room)
+        
+        if min_capacity is not None:
+           stmt = select(Room).where(Room.capacity >= min_capacity)
+        
         result = session.execute(stmt)
         rooms = result.scalars().all()
-        
-        
-        if not rooms  :
-            raise HTTPException(
-                status_code=404,
-                detail="No rooms found"
-            )
+  
 
         return rooms
         
