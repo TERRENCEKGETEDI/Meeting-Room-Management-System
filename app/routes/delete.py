@@ -15,7 +15,7 @@ def delete_room(
     room_id: int
 ) -> dict[str, str]:
     """
-    Delete room route
+    Delete room function for delete route
 
     Args:
         room_id: the id of the room
