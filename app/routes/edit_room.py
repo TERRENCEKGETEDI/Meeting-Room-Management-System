@@ -3,11 +3,11 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from app.database.database import SessionLocal
 from app.models.room import Room
-from app.schemas.room import RoomEdit
+from app.schemas.room import RoomEdit, RoomResponse
 
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
-@router.patch("/{room_id}",response_model= RoomEdit)
+@router.patch("/{room_id}",response_model= RoomResponse)
 def edit_room(room_id: int,room_edit: RoomEdit):
     """
     Edits the the details the room
@@ -27,7 +27,16 @@ def edit_room(room_id: int,room_edit: RoomEdit):
        )
 
     if room_edit.floor.isspace()  or room_edit.name.isspace():
-        return{"message": "Details canont contain a blank space"}
+        raise HTTPException(
+                    status_code=400,
+                    detail="Details canont contain a blank space"
+                )
+    
+    if room_edit.capacity <=0:
+        raise HTTPException(
+            status_code=400,
+            detail="Capacity is less than or equal to 0"
+        )
     
     #Calling using a session object from the main file 
     with SessionLocal() as session:
@@ -59,7 +68,7 @@ def edit_room(room_id: int,room_edit: RoomEdit):
         try:
             session.commit()
             session.refresh(user_result)
-        except IntegrityError: # Catching a NOtNUllViolation to rollback the transaction
+        except IntegrityError: # Catching a NOtNUllViolation/UniqueViolation and in case of the capacity is 0/zero   to rollback the transaction
             session.rollback()
 
             raise HTTPException(
