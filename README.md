@@ -5,9 +5,12 @@
 
 
 ### Technologies🧑‍💻
+- Python
 - FastAPI
+- Pydantic
 - Postgresql
-- sqlalchemy.
+- sqlalchemy
+- Uvicorn
 
 
 ## Project Structure
