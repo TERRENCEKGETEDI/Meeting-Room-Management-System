@@ -36,11 +36,6 @@ def edit_room(room_id: int, room_edit: RoomEdit):
             status_code=400,
             detail="Floor OR Name cannot contain a blank space"
         )
-    # if room_edit.name is not None and room_edit.name.isspace()):
-    #     raise HTTPException(
-    #         status_code=400,
-    #         detail="Room name cannot contain a blank space"
-    #     )
 
     if room_edit.capacity is not None and room_edit.capacity <= 0:
         raise HTTPException(
