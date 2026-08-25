@@ -30,15 +30,11 @@ def edit_room(room_id: int, room_edit: RoomEdit):
         raise HTTPException(status_code=400, detail="No details provdided")
 
     # if invalid values were provided
-    if room_edit.floor is not None and room_edit.floor.isspace():
+    if ((room_edit.floor is not None and room_edit.floor.isspace()) or
+            (room_edit.name is not None and room_edit.name.isspace())):
         raise HTTPException(
             status_code=400,
-            detail="Floor cannot contain a blank space"
-        )
-    if room_edit.name is not None and room_edit.name.isspace():
-        raise HTTPException(
-            status_code=400,
-            detail="Room name cannot contain a blank space"
+            detail="Floor OR Name cannot contain a blank space"
         )
 
     if room_edit.capacity is not None and room_edit.capacity <= 0:
@@ -64,7 +60,10 @@ def edit_room(room_id: int, room_edit: RoomEdit):
             and user_result.capacity == room_edit.capacity
             and user_result.floor == room_edit.floor
         ):
-            return {"message": "no changes made"}
+            raise HTTPException(
+                status_code=400,
+                detail="No changes made"
+            )
 
         # Name != Null store entered value
         if room_edit.name is not None:
