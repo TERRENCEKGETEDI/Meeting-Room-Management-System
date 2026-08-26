@@ -8,15 +8,14 @@ from app.schemas.room import RoomEdit, RoomResponse
 
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
-
 @router.patch("/{room_id}", response_model=RoomResponse)
 def edit_room(room_id: int, room_edit: RoomEdit):
     """
-    Edits the the details the room
+    Edits the details of a room.
 
     Arguments:
-        id: Requires the id of the room you want to edit
-        room_edit: pydantic schema of the Roomedit controls
+        room_id: ID of the room to edit.
+        room_edit: Fields to update.
 
     Return:
         returns the rooms details
@@ -43,48 +42,54 @@ def edit_room(room_id: int, room_edit: RoomEdit):
             detail="Capacity is less than or equal to 0"
         )
 
-    # Calling using a session object from the main file
+    # Open a database session for the duration of the request.
     with SessionLocal() as session:
 
         stmt = select(Room).where(Room.id == room_id)
-        user_result = session.scalars(stmt).first()
+        room_result = session.scalars(stmt).first()
         # Catches a exception in case the room id ,is not found
-        if user_result is None:
+        if room_result is None:
             raise HTTPException(
                 status_code=404,
                 detail="The room id does not exist"
             )
-        # if the results collected from the database equals the one's entered display a message
-        if (
-            user_result.name == room_edit.name
-            and user_result.capacity == room_edit.capacity
-            and user_result.floor == room_edit.floor
-        ):
-            raise HTTPException(
-                status_code=400,
-                detail="No changes made"
-            )
+       
+        changes_made = False
 
-        # Name != Null store entered value
+        # Update the room name only when a new name was provided.
         if room_edit.name is not None:
-            user_result.name = room_edit.name.strip()
+            new_name = room_edit.name.strip()
+            # Checks if changes were made
+            if new_name != room_result.name:
+                room_result.name = new_name
+                changes_made = True
 
-        # Capacity != Null store entered value
+       # Update the room capacity only when a new name was provided.
         if room_edit.capacity is not None:
-            user_result.capacity = room_edit.capacity
+            if room_edit.capacity != room_result.capacity:
+                            room_result.capacity = room_edit.capacity
+                            changes_made = True
 
-        # Floor != Null store entered value
+        # Update the room floor only when a new name was provided.
         if room_edit.floor is not None:
-            user_result.floor = room_edit.floor.strip()
+            new_floor = room_edit.floor.strip()
 
+            if new_floor != room_result.floor:
+                room_result.floor = new_floor
+                changes_made = True
+
+        if not changes_made:
+              raise HTTPException(
+                    status_code=400,
+                    detail="No changes made"
+              )    
+            
         try:
             session.commit()
-            session.refresh(user_result)
-        except (
-            IntegrityError
-        ):  # Catching a NOtNUllViolation/UniqueViolation and in case of the capacity is 0/zero   to rollback the transaction
+            session.refresh(room_result)
+        except IntegrityError:  # Catching a NOtNUllViolation/UniqueViolation  to rollback the transaction
             session.rollback()
 
             raise HTTPException(status_code=409, detail="This room name already exists")
 
-        return user_result
+        return room_result
