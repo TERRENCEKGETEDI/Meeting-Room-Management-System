@@ -6,14 +6,12 @@ from app.models.room import Room
 from app.schemas.room import RoomResponse
 
 
-# groups room-related endpoints
+
 router : APIRouter = APIRouter(
-    prefix="/rooms", # the endpoint will be accessed through the rooms route
-    tags=["Rooms"] #organises the endpoint in the API documentation
+    prefix="/rooms",
+    tags=["Rooms"] 
     )
 
-
-#returns a list of RoomResponse objects so the response is validated and structured correctly
 @router.get("/", response_model=list[RoomResponse])
 def list_all_rooms(min_capacity: int | None = Query(default=None, gt=0)):
     """
@@ -32,7 +30,7 @@ def list_all_rooms(min_capacity: int | None = Query(default=None, gt=0)):
         if min_capacity is not None:
             stmt = stmt.where(Room.capacity >= min_capacity)
 
-        #scalars() gives me the Room objects from the result, and all() collects them into a list.”
+       
         rooms = session.scalars(stmt).all()
 
         return rooms
