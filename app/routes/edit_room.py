@@ -61,7 +61,7 @@ def edit_room(room_id: int, room_edit: RoomEdit):
             new_name = room_edit.name.strip()
             # Checks if changes were made
             if new_name != room_result.name:
-                room_result = new_name
+                room_result.name = new_name
                 changes_made = True
 
        # Update the room capacity only when a new name was provided.
