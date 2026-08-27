@@ -5,12 +5,13 @@
 
 
 ### Technologies🧑‍💻
-- Python
+- Python 3.14
 - FastAPI
 - Pydantic
 - Postgresql
 - sqlalchemy
 - Uvicorn
+- uv
 
 
 ## Project Structure
@@ -27,28 +28,28 @@ Meeting Room Management System
 │
 ├── .env
 ├── .gitignore
-├── requirements.txt
+├── pyproject.toml
+├── uv.lock
 └── README.md
 ```
 
 ### Installation
-- clone/download the project
-```bash
-    git clone https://github.com/TERRENCEKGETEDI/Meeting-Room-Management-System.git
-```
-- download python v3.14.6
-- download postgres v18
-- download pip v26.1.2
-- activate virtual environment
-```bash
-    python3 -m venv .venv
-    source .venv/bin/activate
-```
-- install the project dependencies requirement.txt
-```bash
-    pip install -r requirements.txt
-```
-> create the .env file with the following variables
+1. clone/download the project
+    ```bash
+        git clone https://github.com/TERRENCEKGETEDI/Meeting-Room-Management-System.git
+    ```
+2. Download and Install the required tools
+   - Python 3.14
+   - PostgreSQL v18
+   - uv
+  
+3. Install project dependencies
+   - `uv` will create virtual environment and install the dependencies
+    ```bash
+        uv sync
+    ```
+
+> Configure environment variables
 ```bash
     DB_NAME=db_name
     DB_USER=db_username
@@ -58,17 +59,18 @@ Meeting Room Management System
 ```
 
 ### Usage
-```bash
-    uvicorn app.main:app --reload
-```
-- and visit the broswer at:
-```bash
-    http://localhost:8000/[paths][parameters]
-```
+- Run the FastAPI application with
+    ```bash
+        uv run uvicorn app.main:app --reload
+    ```
+- The API will be available at
+    ```bash
+        http://localhost:8000
+    ```
 - OR
-```bash
-    http://localhost:8000/docs
-```
+    ```bash
+        http://localhost:8000/docs
+    ```
 - for FastAPI documentation
 
 ### Features
@@ -79,6 +81,7 @@ Meeting Room Management System
 - list rooms by filtering with capacity
 
 ### Get latest changes
+- To retrieve the latest changes from the main branch:
 ```bash
    git pull origin main
 ```
