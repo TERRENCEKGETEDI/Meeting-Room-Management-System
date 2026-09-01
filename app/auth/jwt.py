@@ -39,7 +39,7 @@ def create_access_token(username: str):
 
     return token
 
-# decode access token, return payload
+# decode access token,return payload
 def decode_access_token(token: str):
     """
     decoddes a jwt(token)
