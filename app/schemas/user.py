@@ -15,11 +15,13 @@ class UserCreate(BaseModel):
 
 
 class UserResponse(BaseModel):
-    """Schema for returning user information.
+    """
+    Schema for returning user information.
 
     Attributes:
         id: primary key
         username: The username of the user created.
+        role: the role of the user
     """
 
     id: int
