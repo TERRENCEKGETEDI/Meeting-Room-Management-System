@@ -1,21 +1,28 @@
-from pydantic import Basemodel
+from pydantic import BaseModel
 
-class UserCreate(Basemodel):
+
+class UserCreate(BaseModel):
     """
     Schema for creating a new user.
 
-    Defines the information required when a client
-    submits data to create a user.
+    Attributes:
+        username: The username of the user being created.
+        password: The password of the user being created.
     """
+
     username: str
     password: str
 
-class UserResponse(Basemodel):
+
+class UserResponse(BaseModel):
     """Schema for returning user information.
 
-    The password is not included in the response."""
+    Attributes:
+        id: primary key
+        username: The username of the user created.
+        password: The password of the user created.
+    """
+
     id: int
     username: str
     role: str
-
-
