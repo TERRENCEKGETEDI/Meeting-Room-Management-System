@@ -59,6 +59,7 @@ Meeting Room Management System
     DB_PASSWORD=password
     DB_HOST=localhost
     DB_PORT=5432
+    SECRETE_KEY=my_secrete_key
 ```
 
 ### Usage
