@@ -21,7 +21,10 @@ Meeting Room Management System
 │
 ├── app/
 │   ├── main.py
+│   ├── dependencies/
 │   ├── models/
+│   │       ├── rooms/
+│   │       └── users/
 │   ├── schemas/
 │   ├── routes/
 │   └── database/
@@ -67,7 +70,7 @@ Meeting Room Management System
     ```bash
         http://localhost:8000
     ```
-- OR
+- Swagger
     ```bash
         http://localhost:8000/docs
     ```
