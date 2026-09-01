@@ -20,7 +20,6 @@ class UserResponse(BaseModel):
     Attributes:
         id: primary key
         username: The username of the user created.
-        password: The password of the user created.
     """
 
     id: int
