@@ -1,4 +1,5 @@
 import jwt
+from fastapi import HTTPException
 import datetime
 from datetime import timezone, timedelta, datetime
 
@@ -18,7 +19,7 @@ def create_access_token(username: str):
 
     args:
     a username
-    
+
     return: 
     returns a encoded jwt(token)
     """
@@ -47,14 +48,19 @@ def decode_access_token(token: str):
     token: recevies a encoded token
 
     return:
-    the username
+    the payload
     """
-    payload = jwt.decode(
-        token,
-        SECRET_KEY,
-        algorithms=[ALGORITHM]
-    )
+    try:
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
 
-    username = payload.get("sub")
-
-    return username
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=401,
+            detail="Could not validate credentials"
+        )
+    
+    return payload
