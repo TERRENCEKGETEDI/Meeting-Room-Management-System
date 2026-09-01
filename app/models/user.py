@@ -35,5 +35,6 @@ class User(Base):
     )
     role: Mapped[str] = mapped_column(
         String,
-        nullable=False
+        nullable=False,
+        default="user"
     )
