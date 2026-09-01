@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class UserCreate(BaseModel):
     """
+
     Schema for creating a new user.
 
     Attributes:
