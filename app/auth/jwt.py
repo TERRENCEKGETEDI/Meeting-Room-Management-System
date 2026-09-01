@@ -9,35 +9,34 @@ load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # create access token, and return token
-def create_access_token(data: dict ,expires_delta: timedelta | None = None):
+def create_access_token(username: str):
     """
     method responsible to create a jwt(token) 
 
     args:
-    data: a empty dictonary
-    expires_detla: minutes required for the token expiration 
-
+    a username
+    
     return: 
     returns a encoded jwt(token)
     """
-    to_encode = data.copy()
+    
+    expires = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    if expires_delta:
-        expires = datetime.now(timezone.utc) + expires_delta
-    else: 
-        expires = datetime.now(timezone.utc) + timedelta(minutes=20)
+    payload = {
+        "sub": username,
+        "exp": expires
+    }
 
-    to_encode.update({"exp":expires})
-
-    encoded_jwt = jwt.encode(
-        to_encode,
+    token = jwt.encode(
+        payload,
         SECRET_KEY,
         algorithm=ALGORITHM
     )
 
-    return encoded_jwt
+    return token
 
 # decode access token, return username
 def decode_access_token(token: str):
@@ -48,7 +47,7 @@ def decode_access_token(token: str):
     token: recevies a encoded token
 
     return:
-    a decoded token
+    the username
     """
     payload = jwt.decode(
         token,
@@ -56,4 +55,6 @@ def decode_access_token(token: str):
         algorithms=[ALGORITHM]
     )
 
-    return payload
+    username = payload.get("sub")
+
+    return username
