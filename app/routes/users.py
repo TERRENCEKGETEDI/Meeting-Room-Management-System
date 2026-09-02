@@ -31,7 +31,7 @@ def create_user(user: UserCreate,
         session = A databse session life cycle
 
     Return:
-        A username 
+        The details of the user
     """
     stripped_fullname = user.fullname.strip()
     stripped_username = user.username.strip()
@@ -40,7 +40,7 @@ def create_user(user: UserCreate,
     if not stripped_username or not stripped_password or not stripped_fullname:
         raise HTTPException(
             status_code=400,
-            detail="Username or password cannot be empty"
+            detail="Fullname or Username or password cannot be empty"
         )
 
     hashed_password = hash_password(stripped_password)
@@ -48,7 +48,8 @@ def create_user(user: UserCreate,
     new_user = User(
         fullname=stripped_fullname,
         username=stripped_username,
-        password=hashed_password
+        password=hashed_password,
+        role="user"
     )
 
     try:
