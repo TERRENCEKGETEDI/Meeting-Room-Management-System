@@ -1,15 +1,14 @@
 from fastapi import FastAPI
 
 from app.database.database import Base, engine
-from app.routes.rooms import list_rooms
-from app.routes.rooms import add_room, delete, edit_room
+from app.routes.rooms import add_room, delete, edit_room, list_rooms
 
 app = FastAPI()
 
 # create the tables
 Base.metadata.create_all(bind=engine)
 
-# adding the routes 
+# adding the routes
 app.include_router(add_room.router)
 app.include_router(delete.router)
 app.include_router(edit_room.router)
