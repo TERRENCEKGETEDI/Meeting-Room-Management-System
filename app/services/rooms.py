@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.room import Room
+from app.schemas.room import RoomCreate
 
 
 def list_all_rooms_service(
@@ -66,3 +67,44 @@ def delete_room_service(
         )
 
     return {"message": "Room deleted"}
+
+def add_room_service(
+    room: RoomCreate,
+    session: Session
+):
+    """
+        Create a new meeting room.
+
+    Args:
+       room: room details
+    Returns:
+        new_room:The created room
+    """
+    stripped_name = room.name.strip()
+    stripped_floor = room.floor.strip()
+
+    if not stripped_name or not stripped_floor:
+        raise HTTPException(
+            status_code=400, detail="Room name or floor cannot be empty"
+        )
+
+    try:
+        new_room = Room(
+            name=stripped_name, 
+            floor=stripped_floor, 
+            capacity=room.capacity
+        )
+
+        session.add(new_room)
+        session.commit()
+        session.refresh(new_room)
+
+        return new_room
+
+    except IntegrityError:
+        session.rollback()
+
+        raise HTTPException(
+            status_code=409, 
+            detail="A room with this name already exists"
+        )
