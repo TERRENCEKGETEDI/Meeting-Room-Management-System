@@ -40,10 +40,7 @@ def list_all_rooms(
 
 
 @router.delete("/{room_id}")
-def delete_room(
-    room_id: int,
-    session: Session = Depends(get_db),  # noqa: B008
-) -> dict[str, str]:
+def delete_room(room_id: int, session: Session = Depends(get_db)) -> dict[str, str]:
     """
     Delete room function for delete route
 
@@ -154,7 +151,7 @@ def edit_room(room_id: int, room_edit: RoomEdit, session: Session = Depends(get_
 
 
 @router.post("/", response_model=RoomResponse, status_code=201)
-def add_room(room: RoomCreate, db: Session = Depends(get_db)):
+def add_room(room: RoomCreate, session: Session = Depends(get_db)):
     """
         Create a new meeting room.
 
@@ -176,14 +173,14 @@ def add_room(room: RoomCreate, db: Session = Depends(get_db)):
             name=stripped_name, floor=stripped_floor, capacity=room.capacity
         )
 
-        db.add(new_room)
-        db.commit()
-        db.refresh(new_room)
+        session.add(new_room)
+        session.commit()
+        session.refresh(new_room)
 
         return new_room
 
     except IntegrityError:
-        db.rollback()
+        session.rollback()
 
         raise HTTPException(
             status_code=409, detail="A room with this name already exists"
