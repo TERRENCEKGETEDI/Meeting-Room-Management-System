@@ -9,7 +9,11 @@ from app.dependencies.database import get_db
 from app.dependencies.security import get_current_user, require_admin
 from app.models.room import Room
 from app.schemas.room import RoomCreate, RoomEdit, RoomResponse
-from app.services.rooms import delete_room_service, list_all_rooms_service
+from app.services.rooms import (
+    add_room_service,
+    delete_room_service,
+    list_all_rooms_service,
+)
 
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
@@ -143,7 +147,8 @@ def edit_room(
     return room_result
 
 
-@router.post("/", response_model=RoomResponse, status_code=201)
+@router.post("/", response_model=RoomResponse,
+              status_code=201)
 def add_room(
     room: RoomCreate,
     session: Session = Depends(get_db),  # noqa: B008
@@ -157,28 +162,4 @@ def add_room(
     Returns:
         new_room:The created room
     """
-    stripped_name = room.name.strip()
-    stripped_floor = room.floor.strip()
-
-    if not stripped_name or not stripped_floor:
-        raise HTTPException(
-            status_code=400, detail="Room name or floor cannot be empty"
-        )
-
-    try:
-        new_room = Room(
-            name=stripped_name, floor=stripped_floor, capacity=room.capacity
-        )
-
-        session.add(new_room)
-        session.commit()
-        session.refresh(new_room)
-
-        return new_room
-
-    except IntegrityError:
-        session.rollback()
-
-        raise HTTPException(
-            status_code=409, detail="A room with this name already exists"
-        )
+    return add_room_service(room, session)
