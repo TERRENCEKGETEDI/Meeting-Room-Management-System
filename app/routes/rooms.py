@@ -26,19 +26,14 @@ def list_all_rooms(
         session: Database session used to access the database.
         min_capacity: Optional minimum room capacity
                       It must be greater than 0
+        current_user: current user for authorization
+        
 
     Returns:
         A list of all rooms , filtered by minimum capacity if provided
     """
 
-    stmt = select(Room)
-
-    if min_capacity is not None:
-        stmt = stmt.where(Room.capacity >= min_capacity)
-
-    rooms = session.scalars(stmt).all()
-
-    return rooms
+    return list_all_rooms(min_capacity,session)
 
 
 @router.delete("/{room_id}")
