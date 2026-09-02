@@ -1,13 +1,9 @@
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import Query
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.dependencies.database import get_db
-from app.dependencies.security import get_current_user
 from app.models.room import Room
-
-
 
 
 def list_all_rooms(
@@ -37,14 +33,6 @@ def list_all_rooms(
     rooms = session.scalars(stmt).all()
 
     return rooms
-from fastapi import Depends, HTTPException
-from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
-
-from app.dependencies.database import get_db
-from app.dependencies.security import require_admin
-from app.models.room import Room
 
 
 def delete_room_service(
