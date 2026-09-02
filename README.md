@@ -23,8 +23,6 @@ Meeting Room Management System
 │   ├── main.py
 │   ├── dependencies/
 │   ├── models/
-│   │       ├── rooms/
-│   │       └── users/
 │   ├── schemas/
 │   ├── routes/
 │   └── database/
