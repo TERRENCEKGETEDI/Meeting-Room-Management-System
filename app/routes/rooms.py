@@ -21,6 +21,7 @@ def delete_room(
 
     Args:
         room_id: the id of the room
+        session: database session
 
     Returns:
         message: Room deleted or Room not found if room doesn't exist
