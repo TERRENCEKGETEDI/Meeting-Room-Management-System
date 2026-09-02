@@ -55,10 +55,15 @@ def delete_room(
         message: Room deleted or Room not found if room doesn't exist
     """
 
-    stmt = select(Room).where(Room.id == room_id)
+    stmt = select(Room).where(
+        Room.id == room_id
+    )
     room = session.scalars(stmt).first()
     if room is None:
-        raise HTTPException(status_code=404, detail="Room not Found")
+        raise HTTPException(
+            status_code=404,
+            detail="Room not Found"
+        )
     try:
         session.delete(room)
         session.commit()
