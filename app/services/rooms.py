@@ -11,8 +11,9 @@ from app.models.room import Room
 
 
 def list_all_rooms(
+    session: Session,
     min_capacity: int | None = Query(default=None, gt=0),
-    session: Session = Depends(get_db),  # noqa: B008
+    
     
 ):
     """
