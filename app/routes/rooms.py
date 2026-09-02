@@ -62,7 +62,6 @@ def edit_room(room_id: int,
         room_edit: Fields to update.
         session: database session
         
-
     Return:
         returns the rooms details
     """
@@ -72,7 +71,7 @@ def edit_room(room_id: int,
         and room_edit.name is None
         and room_edit.capacity is None
     ):
-        raise HTTPException(status_code=400, detail="No details provdided")
+        raise HTTPException(status_code=400, detail="No details provided")
 
     # if invalid values were provided
     if ((room_edit.floor is not None and room_edit.floor.isspace()) or
@@ -89,7 +88,6 @@ def edit_room(room_id: int,
         )
 
     # Open a database session for the duration of the request.
-
     stmt = select(Room).where(Room.id == room_id)
     room_result = session.scalars(stmt).first()
     # Catches a exception in case the room id ,is not found
