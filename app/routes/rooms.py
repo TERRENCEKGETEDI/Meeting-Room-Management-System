@@ -159,6 +159,8 @@ def add_room(
 
     Args:
        room: room details
+        session: database session
+        current_user: the current user making the request
     Returns:
         new_room:The created room
     """
