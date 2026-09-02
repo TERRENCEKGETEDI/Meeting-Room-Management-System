@@ -21,12 +21,13 @@ Meeting Room Management System
 │
 ├── app/
 │   ├── main.py
+│   ├── auth/
+│   ├── database/
 │   ├── dependencies/
 │   ├── models/
-│   ├── schemas/
-│   ├── services/
 │   ├── routes/
-│   └── database/
+│   ├── schemas/
+│   └── services/
 │
 ├── .env
 ├── .gitignore
