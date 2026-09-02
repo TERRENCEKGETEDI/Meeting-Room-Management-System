@@ -10,7 +10,7 @@ from app.models.user import User
 
 password_hash = PasswordHash.recommended()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/routes/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 
 # Hash password, return hashed password
@@ -45,7 +45,7 @@ def verify_password(password: str, hashed_password: str):
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+    token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)
 ):
     """
     Get the currently authenticated user.
@@ -60,7 +60,7 @@ def get_current_user(
 
     stmt = select(User).where(User.username == username)
 
-    user = db.scalars(stmt).first()
+    user = session.scalars(stmt).first()
 
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
@@ -82,7 +82,6 @@ def require_admin(current_user: User = Depends(get_current_user)):
     Raises:
         HTTPException: If the current user is not an admin.
     """
-
     if current_user.role != "admin":
         raise HTTPException(
             status_code=403,
