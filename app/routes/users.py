@@ -5,13 +5,66 @@ from sqlalchemy.orm import Session
 
 from app.auth.jwt import create_access_token
 from app.dependencies.database import get_db
-from app.dependencies.security import verify_password
+from app.dependencies.security import verify_password, hash_password
 from app.models.user import User
+from sqlalchemy.exc import IntegrityError
+from app.schemas.user import UserCreate, UserResponse
 
 router = APIRouter(
     prefix="/users",
     tags=["Users"]
 )
+
+
+@router.post("/register_user",
+             response_model=UserResponse,
+             status_code=201
+)
+def create_user(user: UserCreate,
+                session: Session = Depends(get_db)
+):
+    """
+    Creates a New user
+
+    Args:
+        UserCreate = A pydantic schema used to create a user
+        session = A databse session life cycle
+
+    Return:
+        A username 
+    """
+    stripped_fullname = user.fullname.strip()
+    stripped_username = user.username.strip()
+    stripped_password = user.password.strip()
+
+    if not stripped_username or not stripped_password or not stripped_fullname:
+        raise HTTPException(
+            status_code=400,
+            detail="Username or password cannot be empty"
+        )
+
+    hashed_password = hash_password(stripped_password)
+
+    new_user = User(
+        fullname=stripped_fullname,
+        username=stripped_username,
+        password=hashed_password
+    )
+
+    try:
+        session.add(new_user)
+        session.commit()
+        session.refresh(new_user)
+
+    except IntegrityError:
+        session.rollback()
+
+        raise HTTPException(
+            status_code=409,
+            detail="The username already exists!"
+        )
+
+    return new_user
 
 
 @router.post("/login")
