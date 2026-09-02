@@ -60,6 +60,8 @@ def edit_room(room_id: int,
     Arguments:
         room_id: ID of the room to edit.
         room_edit: Fields to update.
+        session: database session
+        
 
     Return:
         returns the rooms details
