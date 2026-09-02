@@ -15,7 +15,7 @@ router = APIRouter(prefix="/rooms", tags=["Rooms"])
 @router.get("/", response_model=list[RoomResponse])
 def list_all_rooms(
     min_capacity: int | None = Query(default=None, gt=0),
-    session: Session = Depends(get_db),  # noqa: B008
+    session: Session = Depends(get_db) # noqa: B008
 ):
     """
     Get a list of all rooms. Optionally filtered by minimum capacity
@@ -42,7 +42,7 @@ def list_all_rooms(
 @router.delete("/{room_id}")
 def delete_room(
     room_id: int,
-    session: Session = Depends(get_db),  # noqa: B008
+    session: Session = Depends(get_db)  # noqa: B008
 ) -> dict[str, str]:
     """
     Delete room function for delete route
