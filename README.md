@@ -25,9 +25,9 @@ Meeting Room Management System
 │   ├── database/
 │   ├── dependencies/
 │   ├── models/
+│   ├── routes/
 │   ├── schemas/
-│   ├── services/
-│   └── routes/
+│   └── services/
 │
 ├── .env
 ├── .gitignore
