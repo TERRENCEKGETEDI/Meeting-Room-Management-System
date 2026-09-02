@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.models.room import Room
 
 
-def list_all_rooms(
+def list_all_rooms_service(
     session: Session,
     min_capacity: int | None = Query(default=None, gt=0),
     

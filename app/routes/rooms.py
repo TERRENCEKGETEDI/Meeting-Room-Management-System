@@ -9,7 +9,7 @@ from app.dependencies.database import get_db
 from app.dependencies.security import get_current_user, require_admin
 from app.models.room import Room
 from app.schemas.room import RoomCreate, RoomEdit, RoomResponse
-from app.services.rooms import delete_room_service
+from app.services.rooms import delete_room_service, list_all_rooms_service
 
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
@@ -34,7 +34,7 @@ def list_all_rooms(
         A list of all rooms , filtered by minimum capacity if provided
     """
 
-    return list_all_rooms(min_capacity,session)
+    return list_all_rooms_service(session,min_capacity,)
 
 
 @router.delete("/{room_id}")
