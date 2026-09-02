@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.auth.jwt import create_access_token
 from app.dependencies.database import get_db
-from app.dependencies.security import hash_password, verify_password
+from app.dependencies.security import hash_password
 from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse
+from app.services.users import login_services
 
 router = APIRouter(
     prefix="/users",
@@ -82,28 +81,5 @@ def login(
     Returns:
         token: access token for the user
     """
-    stmt = select(User).where(
-        User.username == user_form.username
-    )
-    existing_user = session.scalar(stmt)
-
-    if existing_user is None:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid username or password"
-        )
-    if not verify_password(
-        user_form.password,
-        existing_user.password
-    ):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid username or password"
-        )
-    token = create_access_token(existing_user.username)
-
-    return {
-            "access_token": token,
-            "token_type": "bearer"
-        }
+    return login_services(user_form, session)
     
