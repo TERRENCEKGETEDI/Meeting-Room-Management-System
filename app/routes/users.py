@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.auth.jwt import create_access_token
 from app.dependencies.database import get_db
-from app.dependencies.security import verify_password, hash_password
+from app.dependencies.security import hash_password, verify_password
 from app.models.user import User
-from sqlalchemy.exc import IntegrityError
 from app.schemas.user import UserCreate, UserResponse
 
 router = APIRouter(
@@ -21,19 +21,19 @@ router = APIRouter(
              status_code=201
 )
 def create_user(user: UserCreate,
-                session: Session = Depends(get_db)
+                session: Session = Depends(get_db)  # noqa: B008
 ):
     """
     Creates a New user
 
     Args:
         UserCreate = A pydantic schema used to create a user
-        session = A databse session life cycle
+        session = A database session life cycle
 
     Return:
         The details of the user
     """
-    stripped_fullname = user.fullname.strip()
+    stripped_fullname = user.full_name.strip()
     stripped_username = user.username.strip()
     stripped_password = user.password.strip()
 
@@ -46,7 +46,7 @@ def create_user(user: UserCreate,
     hashed_password = hash_password(stripped_password)
 
     new_user = User(
-        fullname=stripped_fullname,
+        full_name=stripped_fullname,
         username=stripped_username,
         password=hashed_password,
         role="user"
@@ -100,8 +100,10 @@ def login(
             status_code=401,
             detail="Invalid username or password"
         )
+    token = create_access_token(existing_user.username)
 
-    return create_access_token(
-        existing_user.username
-    )
+    return {
+            "access_token": token,
+            "token_type": "bearer"
+        }
     

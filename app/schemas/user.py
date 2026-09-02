@@ -10,7 +10,7 @@ class UserCreate(BaseModel):
         username: The username of the user being created.
         password: The password of the user being created.
     """
-    fullname: str
+    full_name: str
     username: str
     password: str
 
@@ -26,6 +26,6 @@ class UserResponse(BaseModel):
     """
 
     id: int
-    fullname: str
+    full_name: str
     username: str
     role: str
