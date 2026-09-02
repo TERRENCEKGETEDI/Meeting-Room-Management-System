@@ -47,7 +47,7 @@ def delete_room(
     room_id: int,
     session: Session = Depends(get_db),  # noqa: B008
     current_user: str = Depends(require_admin),
-):
+) -> dict[str, str]:
     """
     Delete room function for delete route
 
@@ -59,7 +59,7 @@ def delete_room(
     Returns:
         message: Room deleted or Room not found if room doesn't exist
     """
-    return delete_room_service(room_id, session, current_user)
+    return delete_room_service(room_id, session)
 
 
 @router.patch("/{room_id}", response_model=RoomResponse)

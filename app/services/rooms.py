@@ -10,7 +10,7 @@ from app.models.room import Room
 
 def delete_room_service(
     room_id: int,
-    session: Session = Depends(get_db)  # noqa: B008
+    session: Session
 ):
     """
     Delete room function for delete route
