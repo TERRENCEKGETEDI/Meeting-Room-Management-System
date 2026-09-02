@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.dependencies.database import get_db
+from app.dependencies.security import get_current_user, require_admin
 from app.models.room import Room
 from app.schemas.room import RoomCreate, RoomEdit, RoomResponse
 
@@ -15,7 +16,8 @@ router = APIRouter(prefix="/rooms", tags=["Rooms"])
 @router.get("/", response_model=list[RoomResponse])
 def list_all_rooms(
     min_capacity: int | None = Query(default=None, gt=0),
-    session: Session = Depends(get_db),
+    session: Session = Depends(get_db),  # noqa: B008
+    current_user: str = Depends(get_current_user),
 ):
     """
     Get a list of all rooms. Optionally filtered by minimum capacity
@@ -40,7 +42,11 @@ def list_all_rooms(
 
 
 @router.delete("/{room_id}")
-def delete_room(room_id: int, session: Session = Depends(get_db)) -> dict[str, str]:
+def delete_room(
+    room_id: int,
+    session: Session = Depends(get_db),  # noqa: B008
+    current_user: str = Depends(require_admin),
+) -> dict[str, str]:
     """
     Delete room function for delete route
 
@@ -70,7 +76,12 @@ def delete_room(room_id: int, session: Session = Depends(get_db)) -> dict[str, s
 
 
 @router.patch("/{room_id}", response_model=RoomResponse)
-def edit_room(room_id: int, room_edit: RoomEdit, session: Session = Depends(get_db)):
+def edit_room(
+    room_id: int,
+    room_edit: RoomEdit,
+    session: Session = Depends(get_db),  # noqa: B008
+    current_user: str = Depends(require_admin),
+):
     """
     Edits the details of a room.
 
@@ -151,7 +162,11 @@ def edit_room(room_id: int, room_edit: RoomEdit, session: Session = Depends(get_
 
 
 @router.post("/", response_model=RoomResponse, status_code=201)
-def add_room(room: RoomCreate, session: Session = Depends(get_db)):
+def add_room(
+    room: RoomCreate,
+    session: Session = Depends(get_db),  # noqa: B008
+    current_user: str = Depends(require_admin),
+):
     """
         Create a new meeting room.
 
