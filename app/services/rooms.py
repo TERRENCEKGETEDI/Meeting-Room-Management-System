@@ -76,7 +76,8 @@ def add_room_service(
         Create a new meeting room.
 
     Args:
-       room: room details
+       room:room details
+       session: database session
     Returns:
         new_room:The created room
     """
