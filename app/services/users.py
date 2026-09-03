@@ -58,7 +58,7 @@ def create_user_service(
     Creates a New user
 
     Args:
-        UserCreate = A pydantic schema used to create a user
+        user  = A pydantic schema used to create a user
         session = A database session life cycle
 
     Return:
