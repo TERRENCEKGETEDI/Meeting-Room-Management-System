@@ -20,7 +20,7 @@ def login_services(
 
     Args:
         user_form: OAuth2PasswordRequestForm object containing username and password
-        session: database session
+        session: database session 
 
     Returns:
         token: access token for the user
