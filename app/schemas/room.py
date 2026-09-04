@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field  # type: ignore
 
 
 class RoomCreate(BaseModel):
@@ -42,7 +42,8 @@ class RoomEdit(BaseModel):
         floor: the floor in which the room is
         capacity: max number of staff the room can hold
     """
-    # Fields are optional for partial updates; if provided, name/floor can't be empty and capacity must be > 0
+    # Fields are optional for partial updates;
+    # if provided, name/floor can't be empty and capacity must be > 0
     name: str | None = Field(default=None, min_length=1)
     floor: str | None = Field(default=None, min_length=1)
     capacity: int | None = Field(default=None, gt=0)

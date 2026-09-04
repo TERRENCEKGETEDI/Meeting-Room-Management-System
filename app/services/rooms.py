@@ -1,0 +1,207 @@
+from fastapi import HTTPException, Query
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.room import Room
+from app.schemas.room import RoomCreate, RoomEdit
+
+
+async def add_room_services(
+    room: RoomCreate,
+    session: AsyncSession
+):
+    """
+        Create a new meeting room.
+
+    Args:
+       room: room details
+       session: AsyncSession for database interaction
+
+    Returns:
+        new_room: The created room
+    """
+    stripped_name = room.name.strip()
+    stripped_floor = room.floor.strip()
+
+    if not stripped_name or not stripped_floor:
+        raise HTTPException(
+            status_code=400, detail="Room name or floor cannot be empty"
+        )
+
+    try:
+        new_room = Room(
+            name=stripped_name,
+            floor=stripped_floor,
+            capacity=room.capacity
+        )
+
+        session.add(new_room)
+        await session.commit()
+        await session.refresh(new_room)
+
+        return new_room
+
+    except IntegrityError:
+        await session.rollback()
+
+        raise HTTPException(
+            status_code=409, detail="A room with this name already exists"
+        )
+
+async def delete_room_services(
+    room_id: int,
+    session: AsyncSession
+) -> dict[str, str]:
+    """
+    Delete room function for delete route
+
+    Args:
+        room_id: the id of the room
+        session: AsyncSession for database interaction
+
+    Returns:
+        message: Room deleted or Room not found if room doesn't exist
+    """
+    stmt = select(Room).where(
+        Room.id == room_id
+    )
+    results = await session.execute(stmt)
+    room = results.scalars().first()
+    if room is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Room not Found"
+        )
+    try:
+        await session.delete(room)
+        await session.commit()
+    except IntegrityError:
+        await session.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="Failed to delete room, room might be"
+            " linked to other tables, try again"
+        )
+
+    return {"message": "Room deleted"}
+
+async def edit_room_services(
+    room_id: int,
+    room_edit: RoomEdit,
+    session: AsyncSession
+):
+    """
+    Edits the details of a room.
+
+    Arguments:
+        room_id: ID of the room to edit.
+        room_edit: Fields to update.
+        session: AsyncSession for database interaction
+
+    Return:
+        returns the rooms details
+    """
+    # If no values entered, return a HTTPException
+    if (
+        room_edit.floor is None
+        and room_edit.name is None
+        and room_edit.capacity is None
+    ):
+        raise HTTPException(status_code=400, detail="No details provided")
+
+    # if invalid values were provided
+    if ((room_edit.floor is not None and room_edit.floor.isspace()) or
+            (room_edit.name is not None and room_edit.name.isspace())):
+        raise HTTPException(
+            status_code=400,
+            detail="Floor OR Name cannot contain a blank space"
+        )
+
+    if room_edit.capacity is not None and room_edit.capacity <= 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Capacity is less than or equal to 0"
+        )
+
+    # Open a database session for the duration of the request.
+    
+
+    stmt = select(Room).where(
+        Room.id == room_id
+    )
+    result = await session.execute(stmt)
+    room_result = result.scalar()
+    # Catches a exception in case the room id ,is not found
+    if room_result is None:
+        raise HTTPException(
+            status_code=404,
+            detail="The room id does not exist"
+        )
+
+    changes_made = False
+
+    # Update the room name only when a new name was provided.
+    if room_edit.name is not None:
+        new_name = room_edit.name.strip()
+        # Checks if changes were made
+        if new_name != room_result.name:
+            room_result.name = new_name
+            changes_made = True
+
+    # Update the room capacity only when a new name was provided.
+    if (room_edit.capacity is not None and
+            room_edit.capacity != room_result.capacity):
+        room_result.capacity = room_edit.capacity
+        changes_made = True
+
+    # Update the room floor only when a new name was provided.
+    if room_edit.floor is not None:
+        new_floor = room_edit.floor.strip()
+
+        if new_floor != room_result.floor:
+            room_result.floor = new_floor
+            changes_made = True
+
+    if not changes_made:
+        raise HTTPException(
+            status_code=400,
+            detail="No changes made"
+        )
+
+    try:
+        await session.commit()
+        await session.refresh(room_result)
+    except IntegrityError:
+        await session.rollback()
+
+        raise HTTPException(
+            status_code=409,
+            detail="This room name already exists"
+        )
+
+    return room_result
+
+async def list_all_rooms_services(
+    session: AsyncSession,
+    min_capacity: int | None = Query(default=None, gt=0)
+):
+    """
+    Get a list of all rooms. Optionally filtered by minimum capacity
+
+    Args:
+        min_capacity: Optional minimum room capacity
+                      It must be greater than 0
+
+    Returns:
+        A list of all rooms , filtered by minimum capacity if provided
+    """
+    stmt = select(Room)
+
+    if min_capacity is not None:
+        stmt = stmt.where(Room.capacity >= min_capacity)
+
+    results = await session.execute(stmt)
+    rooms = results.scalars().all()
+
+    return rooms
