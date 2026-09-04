@@ -26,13 +26,18 @@ class Room(Base):
         unique=True,
         nullable=False
     )
+    # A string is a reasonable choice for floor labels because it supports descriptive
+    # names such as 'ground' or 'basement', as well as numbers such as '0' or '-1'.
+    #
+    # If the allowed floors form a fixed set, consider using an enum, as suggested for
+    # User.role. This would prevent typos and inconsistent floor labels.
     floor: Mapped[str] = mapped_column(
         String,
         nullable=False
     )
     capacity: Mapped[int] = mapped_column(
         Integer,
-        CheckConstraint(
+        CheckConstraint( # Good use of a constraint: it enforces positive capacity in the database.
             "capacity>0",
             name="ck_capacity"
         ),

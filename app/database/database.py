@@ -6,6 +6,10 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 load_dotenv()
 
+# Please use SQLAlchemy's URL.create() to construct the database URL. Passing the
+# connection parameters separately allows credentials containing characters such as
+# '@' or '/' to be handled correctly, without manually escaping them in a URL string.
+# This avoids connection failures caused by credentials being interpreted as URL syntax.
 DATABASE_URL = (
     f"postgresql+psycopg://{os.getenv('DB_USER')}:"
     f"{os.getenv('DB_PASSWORD')}@"

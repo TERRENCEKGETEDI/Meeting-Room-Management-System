@@ -64,6 +64,13 @@ def create_user_service(
     Return:
         The details of the user
     """
+    # Please move name and username whitespace handling and non-empty validation into
+    # the UserCreate Pydantic model, following the example in edit_room_services().
+    # This validates input before the service runs and avoids repeating validation here.
+    # Handle passwords separately: validate them without stripping their characters,
+    # and hash the exact accepted value. Registration currently strips passwords while
+    # login does not, so a password with surrounding spaces will fail at login. Do not
+    # apply model-wide whitespace stripping to UserCreate's password field.
     stripped_fullname = user.full_name.strip()
     stripped_username = user.username.strip()
     stripped_password = user.password.strip()
@@ -97,4 +104,3 @@ def create_user_service(
         )
 
     return new_user
-

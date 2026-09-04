@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Check that SECRET_KEY is set and non-empty when the application starts. If it is
+# missing, raise an error with a clear message. This makes configuration problems easy
+# to identify at startup, instead of allowing login to fail when a token is created.
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30

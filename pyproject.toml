@@ -16,3 +16,31 @@ dependencies = [
     "sqlalchemy==2.0.52",
     "uvicorn==0.52.4",
 ]
+
+# Please configure the Ruff linter and formatter in pyproject.toml so contributors
+# and CI use the same settings. Start with a line-length setting of 100 characters,
+# and investigate which lint rules are useful for this project. This makes formatting
+# expectations explicit and helps catch common mistakes consistently.
+# Read more about configuring Ruff here:
+#
+# https://docs.astral.sh/ruff/configuration/
+#
+# Keep the configuration small: Ruff already provides defaults, so specify only the
+# settings you need to change. The formatter uses line-length as a target, not a strict
+# limit. E501 can be used alongside the formatter, but it may still report long lines
+# after formatting. Enable it only if you also want to address those lines manually.
+#
+# Some lint rules conflict with the formatter's choices for indentation, quotes,
+# docstrings, and trailing commas. Please avoid enabling those rules so formatting
+# does not introduce new lint errors. See the full list and configuration caveats:
+# https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
+#
+# These rules are not enabled by default, but selecting broader rule groups can enable
+# them. Exclude any conflicting rules you select using ignore under [tool.ruff.lint].
+# For example, to disable the two conflicting trailing-comma rules:
+#
+# [tool.ruff.lint]
+# ignore = ["COM812", "COM819"]
+#
+# Add other conflicting rule codes from the documentation to the same ignore list as
+# needed, preserving any existing entries.

@@ -10,6 +10,11 @@ from app.schemas.room import RoomCreate, RoomEdit
 
 def list_all_rooms_service(
     session: Session,
+    # Please change this parameter to `min_capacity: int | None = None`. Keep Query
+    # metadata in the route or its FastAPI dependencies, where it describes and validates
+    # HTTP query parameters. This service is called as an ordinary Python function:
+    # omitting the argument would pass a Query object here, rather than None. Using None
+    # makes the default behave correctly and keeps the service independent of HTTP input.
     min_capacity: int | None = Query(default=None, gt=0),
     
     
@@ -103,8 +108,24 @@ def add_room_service(
         return new_room
 
     except IntegrityError:
+        # Please remove this explicit rollback. The following raise ends this operation,
+        # so the session is no longer used after the error. The get_db() dependency closes
+        # the session during cleanup and releases its transaction resources. Each request
+        # receives a new session, so other requests are unaffected.
+        #
+        # An explicit rollback is needed after a failed flush if the same session will
+        # continue to be used. That is not the case here, so restoring it to a usable
+        # state before closing it adds unnecessary cleanup code.
+        #
+        # Apply this change wherever the session is no longer used after an error and
+        # is closed by the dependency. Keep rollbacks where that session is reused.
         session.rollback()
 
+        # Please use constants from FastAPI's status module for HTTP status codes
+        # throughout the codebase. For example, status.HTTP_409_CONFLICT makes the
+        # response's meaning clear without requiring the reader to remember what 409
+        # means. This is a readability and consistency improvement. See:
+        # https://fastapi.tiangolo.com/reference/status/
         raise HTTPException(
             status_code=409, 
             detail="A room with this name already exists"
@@ -134,19 +155,6 @@ def edit_room_services(
     ):
         raise HTTPException(status_code=400, detail="No details provided")
 
-    # if invalid values were provided
-    if (room_edit.floor is not None and room_edit.floor.isspace()) or (
-        room_edit.name is not None and room_edit.name.isspace()
-    ):
-        raise HTTPException(
-            status_code=400, detail="Floor OR Name cannot contain a blank space"
-        )
-
-    if room_edit.capacity is not None and room_edit.capacity <= 0:
-        raise HTTPException(
-            status_code=400, detail="Capacity is less than or equal to 0"
-        )
-
     # Open a database session for the duration of the request.
     stmt = select(Room).where(Room.id == room_id)
     room_result = session.scalars(stmt).first()
@@ -154,32 +162,45 @@ def edit_room_services(
     if room_result is None:
         raise HTTPException(status_code=404, detail="The room id does not exist")
 
-    changes_made = False
+    # The original update logic had well-considered checks, but repeated similar code
+    # for each field. I have replaced it below with a Pydantic model_dump() loop and
+    # SQLAlchemy's is_modified() check. The loop applies non-None values, and
+    # is_modified() detects whether the stored values would actually change. This
+    # removes the need to maintain a separate changes_made flag for every field.
+    # Please complete this approach by adding the schema validation described below.
 
-    # Update the room name only when a new name was provided.
-    if room_edit.name is not None:
-        new_name = room_edit.name.strip()
-        # Checks if changes were made
-        if new_name != room_result.name:
-            room_result.name = new_name
-            changes_made = True
+    for field, value in room_edit.model_dump(exclude_none=True).items():
+        # This requires the Pydantic field names to match the SQLAlchemy attribute names.
+        setattr(room_result, field, value)
 
-    # Update the room capacity only when a new name was provided.
-    if room_edit.capacity is not None:
-        if room_edit.capacity != room_result.capacity:
-            room_result.capacity = room_edit.capacity
-            changes_made = True
-
-    # Update the room floor only when a new name was provided.
-    if room_edit.floor is not None:
-        new_floor = room_edit.floor.strip()
-
-        if new_floor != room_result.floor:
-            room_result.floor = new_floor
-            changes_made = True
-
-    if not changes_made:
+    if not session.is_modified(room_result):
         raise HTTPException(status_code=400, detail="No changes made")
+
+    # Please configure RoomEdit to strip leading and trailing whitespace and reject
+    # strings that are empty after stripping. The update loop above does not perform
+    # those checks, so this schema change is needed to prevent blank names and floors:
+    #
+    #   class RoomEdit(BaseModel):
+    #       model_config = ConfigDict(str_strip_whitespace=True)
+    #
+    #       name: str | None = Field(default=None, min_length=1)
+    #       floor: str | None = Field(default=None, min_length=1)
+    #       capacity: int | None = Field(default=None, gt=0)
+    #
+    # Import ConfigDict from pydantic for this example. str_strip_whitespace applies to
+    # all string fields in the model; it does not affect capacity. Stripping happens
+    # before the minimum-length check, so strings containing only whitespace are
+    # rejected. Use field-specific validation if some strings must be preserved.
+    # I have removed the manual isspace() checks in anticipation of this schema change.
+    # The manual capacity check is also removed because RoomEdit already enforces
+    # capacity > 0 through its field constraint.
+    #
+    # FastAPI validates the request body with this model before calling the route
+    # function, so invalid input is rejected before reaching the service. Validation
+    # errors produce a 422 response by default, rather than the previous manual 400.
+    # Apply the same whitespace handling to RoomCreate, then remove the duplicate
+    # stripping and empty-string checks in add_room_service(). Check for other suitable
+    # places to move input validation into schemas so each rule has one clear home.
 
     try:
         session.commit()
