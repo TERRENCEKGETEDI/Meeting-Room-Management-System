@@ -32,7 +32,7 @@ async def test_async2():
     return {"message": "done"}
 
 @router.get("/bad-async")
-async def bad_async():
+def bad_async():
     time.sleep(5)
     return {"message": "done"}
 
