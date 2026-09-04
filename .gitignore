@@ -1,5 +1,8 @@
 .env
 .venv/
-.*
+.python-version
+.vscode/
+.idea
 __pycache__/
 *.pyc
+.DS_Store
