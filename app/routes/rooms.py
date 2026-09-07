@@ -1,5 +1,7 @@
 """room routes"""
 
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -17,12 +19,16 @@ from app.services.rooms import (
 
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
+RequireAdminDep = Depends(require_admin)
 
-@router.get("/", response_model=list[RoomResponse])
+
+@router.get("/", 
+     response_model=list[RoomResponse],
+     dependencies = Depends(get_current_user) #authenticated users can view rooms.,
+)
 def list_all_rooms(
-    min_capacity: int | None = Query(default=None, gt=0),
-    session: Session = Depends(get_db),  # noqa: B008
-    current_user: str = Depends(get_current_user),
+    session: Annotated[Session , Depends(get_db)],
+    min_capacity: Annotated[int | None , Query(gt=0)] = None
 ):
     """
     Get a list of all rooms. Optionally filtered by minimum capacity
@@ -30,9 +36,6 @@ def list_all_rooms(
     Args:
         session: Database session used to access the database.
         min_capacity: Optional minimum room capacity
-                      It must be greater than 0
-        current_user: current user for authorization
-        
 
     Returns:
         A list of all rooms , filtered by minimum capacity if provided

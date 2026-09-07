@@ -1,3 +1,6 @@
+from typing import Annotated
+
+from app.models.roles import UserRole
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
@@ -69,22 +72,19 @@ def get_current_user(
 
 
 # require admin
-def require_admin(current_user: User = Depends(get_current_user)):
+def require_admin(current_user: Annotated[User , Depends(get_current_user)]):
     """
     Verify that the current user has admin privileges.
 
     Args:
         current_user: The currently authenticated user.
 
-    Returns:
-        The current user if they have admin privileges.
-
     Raises:
         HTTPException: If the current user is not an admin.
     """
-    if current_user.role != "admin":
+    if current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=403,
             detail="Admin privileges required",
         )
-    return current_user
+
