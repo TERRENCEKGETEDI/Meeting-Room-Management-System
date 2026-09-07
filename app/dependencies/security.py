@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from app.models.roles import UserRole
+from app.models.roles import UserRole # type: ignore
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash

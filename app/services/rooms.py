@@ -161,7 +161,7 @@ def edit_room_services(
             changes_made = True
 
     # Update the room capacity only when a new name was provided.
-    if room_edit.capacity is not None:
+    if room_edit.capacity is not None:  # noqa: SIM102
         if room_edit.capacity != room_result.capacity:
             room_result.capacity = room_edit.capacity
             changes_made = True
