@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from app.models.roles import UserRole # type: ignore
+from app.models.roles import UserRole  # type: ignore
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
@@ -48,7 +48,7 @@ def verify_password(password: str, hashed_password: str):
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)
+    token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)  # noqa: B008
 ):
     """
     Get the currently authenticated user.
