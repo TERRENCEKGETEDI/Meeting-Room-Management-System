@@ -1,10 +1,10 @@
-import jwt
-from fastapi import HTTPException
-import datetime
-from datetime import timezone, timedelta, datetime
 
 import os
+from datetime import UTC, datetime, timedelta
+
+import jwt
 from dotenv import load_dotenv
+from fastapi import HTTPException
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ def create_access_token(username: str):
     returns a encoded jwt(token)
     """
     
-    expires = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expires = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
     payload = {
         "sub": username,
