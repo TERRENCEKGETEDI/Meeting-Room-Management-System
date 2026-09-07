@@ -1,5 +1,5 @@
 
-from fastapi import HTTPException, Query
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -10,9 +10,7 @@ from app.schemas.room import RoomCreate, RoomEdit
 
 def list_all_rooms_service(
     session: Session,
-    min_capacity: int | None = Query(default=None, gt=0),
-    
-    
+    min_capacity: int | None = None,
 ):
     """
     Get a list of all rooms. Optionally filtered by minimum capacity
@@ -20,8 +18,6 @@ def list_all_rooms_service(
     Args:
         session: Database session used to access the database.
         min_capacity: Optional minimum room capacity
-                      It must be greater than 0
-        
 
     Returns:
         A list of all rooms , filtered by minimum capacity if provided
@@ -165,7 +161,7 @@ def edit_room_services(
             changes_made = True
 
     # Update the room capacity only when a new name was provided.
-    if room_edit.capacity is not None:
+    if room_edit.capacity is not None:  # noqa: SIM102
         if room_edit.capacity != room_result.capacity:
             room_result.capacity = room_edit.capacity
             changes_made = True
