@@ -8,11 +8,6 @@ def get_db():
     Yields:
         Session: Database session used by the request.
     """
-    db = SessionLocal()
-
-    try:
-        yield db
-
-    finally:
-        db.close()
+    with SessionLocal() as session:
+        yield session
 
