@@ -49,7 +49,8 @@ def verify_password(password: str, hashed_password: str):
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)  # noqa: B008
+    token: Annotated[str ,  Depends(oauth2_scheme)], 
+    session: Annotated[Session ,Depends(get_db)]
 ):
     """
     Get the currently authenticated user.
@@ -60,14 +61,14 @@ def get_current_user(
     username = payload.get("sub")
 
     if username is None:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
 
     stmt = select(User).where(User.username == username)
 
     user = session.scalars(stmt).first()
 
     if user is None:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
 
     return user
 
