@@ -2,12 +2,11 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, dependencies
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.dependencies.database import get_db
 from app.dependencies.security import get_current_user, require_admin
-from app.models.user import User
 from app.schemas.room import RoomCreate, RoomEdit, RoomResponse
 from app.services.rooms import (
     add_room_service,
