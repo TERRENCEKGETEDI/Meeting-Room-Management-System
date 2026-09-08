@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String
+from sqlalchemy import CheckConstraint, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database.database import Base
@@ -35,6 +35,10 @@ class User(Base):
     )
     role: Mapped[str] = mapped_column(
         String,
+        CheckConstraint(
+            "role in ('user','admin')",
+            name="ck_roles"
+        ),
         nullable=False,
         default="user"
     )
