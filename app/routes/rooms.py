@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, dependencies
 from sqlalchemy.orm import Session
 
 from app.dependencies.database import get_db
@@ -44,11 +44,11 @@ def list_all_rooms(
     return list_all_rooms_service(session,min_capacity)
 
 
-@router.delete("/{room_id}")
+@router.delete("/{room_id}", 
+               dependencies = [Depends(require_admin)])
 def delete_room(
     room_id: int,
-    session: Annotated[Session, Depends(get_db)],
-    current_user: Annotated[str, Depends(require_admin)],
+    session: Annotated[Session, Depends(get_db)]
 ) -> dict[str, str]:
     """
     Delete room function for delete route
