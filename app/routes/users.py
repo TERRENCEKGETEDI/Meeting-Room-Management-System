@@ -32,7 +32,7 @@ def create_user(user: UserCreate,
         The details of the user
     """
     
-    return create_user_service(user,session)
+    return create_user_service(user, session)
 
 
 @router.post("/login")
@@ -43,11 +43,11 @@ def login(
     """
     User login route
     Args:
-        user_form: OAuth2PasswordRequestForm object containing username and password
+        user_form: OAuth2PasswordRequestForm object
+            containing username and password
         session: database session
 
     Returns:
         token: access token for the user
     """
     return login_services(user_form, session)
-    

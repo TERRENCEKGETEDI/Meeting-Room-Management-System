@@ -18,8 +18,8 @@ from app.services.rooms import (
 
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
-RequireAdminDep = Annotated[User, Depends(require_admin)]
-SessionDep = Annotated[Session,Depends(get_db)]
+RequireAdminDep = Depends(require_admin)
+SessionDep = Annotated[Session, Depends(get_db)]
 
 
 @router.get("/",
@@ -44,8 +44,9 @@ def list_all_rooms(
     return list_all_rooms_service(session,min_capacity)
 
 
-@router.delete("/{room_id}", 
-               dependencies = [Depends(require_admin)])
+@router.delete(
+        "/{room_id}",
+        dependencies=[RequireAdminDep])
 def delete_room(
     room_id: int,
     session: Annotated[Session, Depends(get_db)]
@@ -56,7 +57,6 @@ def delete_room(
     Args:
         room_id: the id of the room
         session: database session
-        current_user: the current user making the request
 
     Returns:
         message: Room deleted or Room not found if room doesn't exist

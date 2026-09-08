@@ -32,7 +32,10 @@ def list_all_rooms_service(
     return rooms
 
 
-def delete_room_service(room_id: int, session: Session):
+def delete_room_service(
+        room_id: int,
+        session: Session
+):
     """
     Delete room function for delete route
 
@@ -55,10 +58,9 @@ def delete_room_service(room_id: int, session: Session):
         session.delete(room)
         session.commit()
     except IntegrityError:
-        session.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Failed to delete room, room might be linked to other tables, try again",
+            detail="Failed to delete room, linked to a row"
         )
 
     return {"message": "Room deleted"}
