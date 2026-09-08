@@ -13,7 +13,7 @@ class User(Base):
         full_name: the full name of the user
         username: the username of the user
         password: the password of the user
-        role: the role of the user (admin or user)
+        role: the role of the user(admin or user)
     """
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(
