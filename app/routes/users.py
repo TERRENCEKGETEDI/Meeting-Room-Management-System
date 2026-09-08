@@ -1,3 +1,5 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -35,8 +37,8 @@ def create_user(user: UserCreate,
 
 @router.post("/login")
 def login(
-    user_form: OAuth2PasswordRequestForm = Depends(),  # noqa: B008
-    session: Session = Depends(get_db)  # noqa: B008
+    user_form: Annotated[OAuth2PasswordRequestForm, Depends()],
+    session: Annotated[Session, Depends(get_db)]
 ):
     """
     User login route

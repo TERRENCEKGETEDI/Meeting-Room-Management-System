@@ -47,14 +47,17 @@ def delete_room_service(room_id: int, session: Session):
     stmt = select(Room).where(Room.id == room_id)
     room = session.scalars(stmt).first()
     if room is None:
-        raise HTTPException(status_code=404, detail="Room not Found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Room not Found"
+        )
     try:
         session.delete(room)
         session.commit()
     except IntegrityError:
         session.rollback()
         raise HTTPException(
-            status_code=409,
+            status_code=status.HTTP_409_CONFLICT,
             detail="Failed to delete room, room might be linked to other tables, try again",
         )
 

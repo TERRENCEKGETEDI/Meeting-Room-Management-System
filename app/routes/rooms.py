@@ -47,8 +47,8 @@ def list_all_rooms(
 @router.delete("/{room_id}")
 def delete_room(
     room_id: int,
-    session: Session = Depends(get_db),  # noqa: B008
-    current_user: str = Depends(require_admin),
+    session: Annotated[Session, Depends(get_db)],
+    current_user: Annotated[str, Depends(require_admin)],
 ) -> dict[str, str]:
     """
     Delete room function for delete route
