@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -18,7 +18,7 @@ router = APIRouter(
 
 @router.post("/register_user",
              response_model=UserResponse,
-             status_code=201
+             status_code=status.HTTP_201_CREATED
 )
 def create_user(user: UserCreate,
                 session: Session = Depends(get_db)  # noqa: B008
@@ -39,7 +39,7 @@ def create_user(user: UserCreate,
 
     if not stripped_username or not stripped_password or not stripped_fullname:
         raise HTTPException(
-            status_code=400,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Fullname or Username or password cannot be empty"
         )
 
@@ -61,7 +61,7 @@ def create_user(user: UserCreate,
         session.rollback()
 
         raise HTTPException(
-            status_code=409,
+            status_code=status.HTTP_409_CONFLICT,
             detail="The username already exists!"
         )
 
@@ -89,7 +89,7 @@ def login(
 
     if existing_user is None:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password"
         )
     if not verify_password(
@@ -97,7 +97,7 @@ def login(
         existing_user.password
     ):
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password"
         )
     token = create_access_token(existing_user.username)

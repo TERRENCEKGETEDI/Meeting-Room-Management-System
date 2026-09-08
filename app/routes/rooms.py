@@ -1,6 +1,6 @@
 """room routes"""
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -86,19 +86,19 @@ def edit_room(
         and room_edit.name is None
         and room_edit.capacity is None
     ):
-        raise HTTPException(status_code=400, detail="No details provided")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No details provided")
 
     # if invalid values were provided
     if (room_edit.floor is not None and room_edit.floor.isspace()) or (
         room_edit.name is not None and room_edit.name.isspace()
     ):
         raise HTTPException(
-            status_code=400, detail="Floor OR Name cannot contain a blank space"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Floor OR Name cannot contain a blank space"
         )
 
     if room_edit.capacity is not None and room_edit.capacity <= 0:
         raise HTTPException(
-            status_code=400, detail="Capacity is less than or equal to 0"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Capacity is less than or equal to 0"
         )
 
     # Open a database session for the duration of the request.
@@ -106,7 +106,7 @@ def edit_room(
     room_result = session.scalars(stmt).first()
     # Catches a exception in case the room id ,is not found
     if room_result is None:
-        raise HTTPException(status_code=404, detail="The room id does not exist")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The room id does not exist")
 
     changes_made = False
 
@@ -133,7 +133,7 @@ def edit_room(
             changes_made = True
 
     if not changes_made:
-        raise HTTPException(status_code=400, detail="No changes made")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No changes made")
 
     try:
         session.commit()
@@ -143,12 +143,12 @@ def edit_room(
     ):  # Catching a NOtNUllViolation/UniqueViolation  to rollback the transaction
         session.rollback()
 
-        raise HTTPException(status_code=409, detail="This room name already exists")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="This room name already exists")
 
     return room_result
 
 
-@router.post("/", response_model=RoomResponse, status_code=201)
+@router.post("/", response_model=RoomResponse, status_code=status.HTTP_201_CREATED)
 def add_room(
     room: RoomCreate,
     session: Session = Depends(get_db),  # noqa: B008
@@ -167,7 +167,7 @@ def add_room(
 
     if not stripped_name or not stripped_floor:
         raise HTTPException(
-            status_code=400, detail="Room name or floor cannot be empty"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Room name or floor cannot be empty"
         )
 
     try:
@@ -185,5 +185,5 @@ def add_room(
         session.rollback()
 
         raise HTTPException(
-            status_code=409, detail="A room with this name already exists"
+            status_code=status.HTTP_409_CONFLICT, detail="A room with this name already exists"
         )
