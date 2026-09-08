@@ -1,8 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, HTTPException
-from app.models.roles import UserRole
-from fastapi import Depends, HTTPException ,status
+from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
 from sqlalchemy import select
