@@ -1,6 +1,5 @@
 from typing import Annotated
 
-from app.models.roles import UserRole  # type: ignore
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
@@ -9,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.auth.jwt import decode_access_token
 from app.dependencies.database import get_db
+from app.models.roles import UserRole  # type: ignore
 from app.models.user import User
 
 password_hash = PasswordHash.recommended()
