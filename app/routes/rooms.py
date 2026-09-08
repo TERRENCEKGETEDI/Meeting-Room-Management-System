@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.database import get_db
 from app.dependencies.security import get_current_user, require_admin
+from app.models.user import User
 from app.schemas.room import RoomCreate, RoomEdit, RoomResponse
 from app.services.rooms import (
     add_room_service,
@@ -17,15 +18,16 @@ from app.services.rooms import (
 
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
-RequireAdminDep = Depends(require_admin)
+RequireAdminDep = Annotated[User, Depends(require_admin)]
+SessionDep = Annotated[Session,Depends(get_db)]
 
 
 @router.get("/",
      response_model=list[RoomResponse],
-     dependencies = Depends(get_current_user) #authenticated users can view rooms.,
+     dependencies = [Depends(get_current_user)] #authenticated users can view rooms.,
 )
 def list_all_rooms(
-    session: Annotated[Session , Depends(get_db)],
+    session: SessionDep,
     min_capacity: Annotated[int | None , Query(gt=0)] = None
 ):
     """

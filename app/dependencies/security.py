@@ -1,6 +1,8 @@
 from typing import Annotated
 
 from fastapi import Depends, HTTPException
+from app.models.roles import UserRole
+from fastapi import Depends, HTTPException ,status
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
 from sqlalchemy import select
@@ -12,6 +14,7 @@ from app.models.roles import UserRole
 from app.models.user import User
 
 password_hash = PasswordHash.recommended()
+ADMIN_REQUIRED_STATUS = 403
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
@@ -32,7 +35,7 @@ def hash_password(password: str):
 
 # verity password, return boolean
 def verify_password(password: str, hashed_password: str):
-    """Verify if the plaintext message matches the hashed passsword
+    """Verify if the plaintext message matches the hashed password
 
     Args:
         password (str): plaintext password
@@ -84,7 +87,7 @@ def require_admin(current_user: Annotated[User , Depends(get_current_user)]):
     """
     if current_user.role != UserRole.ADMIN:
         raise HTTPException(
-            status_code=403,
+            status_code= status.HTTP_401_UNAUTHORIZED,
             detail="Admin privileges required",
         )
 
