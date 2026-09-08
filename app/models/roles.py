@@ -4,7 +4,7 @@ from enum import Enum
 
 
 class UserRole(str, Enum):
-    """Roles that are available
+    """Roles that are available 
 
     Attributes:
         USER: user

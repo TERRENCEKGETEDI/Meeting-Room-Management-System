@@ -4,7 +4,7 @@ from enum import Enum
 
 
 class FloorNames(str, Enum):
-    """Fixed floor names
+    """Fixed floor names 
 
     Attributes:
         BASEMENT
