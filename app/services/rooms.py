@@ -1,4 +1,4 @@
-from fastapi import status, HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
