@@ -1,5 +1,4 @@
-
-from fastapi import HTTPException
+from fastapi import status, HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -33,10 +32,7 @@ def list_all_rooms_service(
     return rooms
 
 
-def delete_room_service(
-    room_id: int,
-    session: Session
-):
+def delete_room_service(room_id: int, session: Session):
     """
     Delete room function for delete route
 
@@ -64,10 +60,8 @@ def delete_room_service(
 
     return {"message": "Room deleted"}
 
-def add_room_service(
-    room: RoomCreate,
-    session: Session
-):
+
+def add_room_service(room: RoomCreate, session: Session):
     """
         Create a new meeting room.
 
@@ -87,9 +81,7 @@ def add_room_service(
 
     try:
         new_room = Room(
-            name=stripped_name, 
-            floor=stripped_floor, 
-            capacity=room.capacity
+            name=stripped_name, floor=stripped_floor, capacity=room.capacity
         )
 
         session.add(new_room)
@@ -102,15 +94,11 @@ def add_room_service(
         session.rollback()
 
         raise HTTPException(
-            status_code=409, 
-            detail="A room with this name already exists"
+            status_code=409, detail="A room with this name already exists"
         )
 
-def edit_room_services(
-    room_id: int,
-    room_edit: RoomEdit,
-    session: Session 
-):
+
+def edit_room_services(room_id: int, room_edit: RoomEdit, session: Session):
     """
     Edits the details of a room.
 
@@ -130,19 +118,6 @@ def edit_room_services(
     ):
         raise HTTPException(status_code=400, detail="No details provided")
 
-    # if invalid values were provided
-    if (room_edit.floor is not None and room_edit.floor.isspace()) or (
-        room_edit.name is not None and room_edit.name.isspace()
-    ):
-        raise HTTPException(
-            status_code=400, detail="Floor OR Name cannot contain a blank space"
-        )
-
-    if room_edit.capacity is not None and room_edit.capacity <= 0:
-        raise HTTPException(
-            status_code=400, detail="Capacity is less than or equal to 0"
-        )
-
     # Open a database session for the duration of the request.
     stmt = select(Room).where(Room.id == room_id)
     room_result = session.scalars(stmt).first()
@@ -150,41 +125,17 @@ def edit_room_services(
     if room_result is None:
         raise HTTPException(status_code=404, detail="The room id does not exist")
 
-    changes_made = False
+    # App;y only the fileds that were provided.
+    for field, value in room_edit.model_dump(exclude=True).items():
+        setattr(room_result, field, value)
 
-    # Update the room name only when a new name was provided.
-    if room_edit.name is not None:
-        new_name = room_edit.name.strip()
-        # Checks if changes were made
-        if new_name != room_result.name:
-            room_result.name = new_name
-            changes_made = True
+    # Check whether the values actually changed
+    if not session.is_modified(room_result):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No changes made"
+        )
 
-    # Update the room capacity only when a new name was provided.
-    if room_edit.capacity is not None:  # noqa: SIM102
-        if room_edit.capacity != room_result.capacity:
-            room_result.capacity = room_edit.capacity
-            changes_made = True
-
-    # Update the room floor only when a new name was provided.
-    if room_edit.floor is not None:
-        new_floor = room_edit.floor.strip()
-
-        if new_floor != room_result.floor:
-            room_result.floor = new_floor
-            changes_made = True
-
-    if not changes_made:
-        raise HTTPException(status_code=400, detail="No changes made")
-
-    try:
-        session.commit()
-        session.refresh(room_result)
-    except (
-        IntegrityError
-    ):  # Catching a NOtNUllViolation/UniqueViolation  to rollback the transaction
-        session.rollback()
-
-        raise HTTPException(status_code=409, detail="This room name already exists")
+    session.commit()
+    session.refresh(room_result)
 
     return room_result
