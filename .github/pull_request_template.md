@@ -1,6 +1,6 @@
 # Description
 
-<!-- Briefly explain what this PR changes and wahy. -->
+<!-- Briefly explain what this PR changes and why. -->
 
 ## Type of change
 
