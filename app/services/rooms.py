@@ -76,7 +76,7 @@ def add_room_service(room: RoomCreate, session: Session):
 
     if not stripped_name or not stripped_floor:
         raise HTTPException(
-            status_code=400, detail="Room name or floor cannot be empty"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Room name or floor cannot be empty"
         )
 
     try:
@@ -94,7 +94,7 @@ def add_room_service(room: RoomCreate, session: Session):
         session.rollback()
 
         raise HTTPException(
-            status_code=409, detail="A room with this name already exists"
+            status_code=status.HTTP_409_CONFLICT, detail="A room with this name already exists"
         )
 
 
@@ -116,14 +116,14 @@ def edit_room_services(room_id: int, room_edit: RoomEdit, session: Session):
         and room_edit.name is None
         and room_edit.capacity is None
     ):
-        raise HTTPException(status_code=400, detail="No details provided")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No details provided")
 
     # Open a database session for the duration of the request.
     stmt = select(Room).where(Room.id == room_id)
     room_result = session.scalars(stmt).first()
     # Catches a exception in case the room id ,is not found
     if room_result is None:
-        raise HTTPException(status_code=404, detail="The room id does not exist")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The room id does not exist")
 
     # App;y only the fileds that were provided.
     for field, value in room_edit.model_dump(exclude=True).items():
