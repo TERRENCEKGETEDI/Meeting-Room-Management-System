@@ -17,6 +17,45 @@ ADMIN_REQUIRED_STATUS = 403
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 
+# Password validation
+def password_validation(password: str):
+    lower_cases = 0
+    upper_cases = 0
+    num_digits = 0
+    special_chars = 0
+    if len(password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Weak password, length must be 8 characters or more"
+        )
+
+    for char in password:
+        if char.isdigit():
+            num_digits += 1
+        if char.islower():
+            lower_cases += 1
+        if char.isupper():
+            upper_cases += 1
+        if not char.isalnum():
+            special_chars += 1
+
+    if (
+        lower_cases < 1
+        or upper_cases < 1
+        or num_digits < 1
+        or special_chars < 1
+    ):
+        message = (
+            "Invalid password, at least 1 small letters, 1 capital letter, "
+            "1 digit, 1 special character"
+        )
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=message
+        )
+
+
 # Hash password, return hashed password
 def hash_password(password: str):
     """
@@ -28,6 +67,7 @@ def hash_password(password: str):
     Returns:
         hashed password
     """
+    password_validation(password)
     return password_hash.hash(password)
 
 
@@ -49,10 +89,15 @@ def verify_password(password: str, hashed_password: str):
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme), session: Session = Depends(get_db)  # noqa: B008
+    session: Annotated[Session, Depends(get_db)],
+    token: str = Depends(oauth2_scheme)
 ):
     """
-    Get the currently authenticated user.
+        Get the currently authenticated user.
+
+        Args:
+            session: database session
+            token: user token
     """
 
     payload = decode_access_token(token)
@@ -60,20 +105,23 @@ def get_current_user(
     username = payload.get("sub")
 
     if username is None:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+        raise HTTPException(
+            status_code=401,
+            detail="Could not validate credentials"
+        )
 
     stmt = select(User).where(User.username == username)
 
     user = session.scalars(stmt).first()
 
     if user is None:
-        raise HTTPException(status_code=401, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
 
     return user
 
 
 # require admin
-def require_admin(current_user: Annotated[User , Depends(get_current_user)]):
+def require_admin(current_user: Annotated[User, Depends(get_current_user)]):
     """
     Verify that the current user has admin privileges.
 
@@ -85,7 +133,6 @@ def require_admin(current_user: Annotated[User , Depends(get_current_user)]):
     """
     if current_user.role != UserRole.ADMIN:
         raise HTTPException(
-            status_code= status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_403_FORBIDDEN,
             detail="Admin privileges required",
         )
-

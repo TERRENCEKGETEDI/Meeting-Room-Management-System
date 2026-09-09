@@ -21,18 +21,26 @@ def create_access_token(username: str):
     """
     method responsible to create a jwt(token)
 
-    args:
-    a username
+    Args:
+        username: username for the user
 
-    return:
-    returns a encoded jwt(token)
+    Returns:
+        token: returns a encoded jwt(token)
     """
 
-    expires = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expires = datetime.now(UTC) + timedelta(
+        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+    )
 
-    payload = {"sub": username, "exp": expires}
+    payload = {
+        "sub": username,
+        "exp": expires
+    }
 
-    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+    token = jwt.encode(
+        payload,
+        SECRET_KEY, algorithm=ALGORITHM
+    )
 
     return token
 
@@ -52,6 +60,9 @@ def decode_access_token(token: str):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
 
     except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+        raise HTTPException(
+            status_code=401,
+            detail="Could not validate credentials"
+        )
 
     return payload

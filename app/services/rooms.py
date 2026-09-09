@@ -32,7 +32,10 @@ def list_all_rooms_service(
     return rooms
 
 
-def delete_room_service(room_id: int, session: Session):
+def delete_room_service(
+        room_id: int,
+        session: Session
+):
     """
     Delete room function for delete route
 
@@ -55,10 +58,9 @@ def delete_room_service(room_id: int, session: Session):
         session.delete(room)
         session.commit()
     except IntegrityError:
-        session.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Failed to delete room, room might be linked to other tables, try again",
+            detail="Failed to delete room, linked to a row"
         )
 
     return {"message": "Room deleted"}
@@ -79,7 +81,8 @@ def add_room_service(room: RoomCreate, session: Session):
 
     if not stripped_name or not stripped_floor:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Room name or floor cannot be empty"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Room name or floor cannot be empty"
         )
 
     try:
@@ -94,10 +97,10 @@ def add_room_service(room: RoomCreate, session: Session):
         return new_room
 
     except IntegrityError:
-        session.rollback()
 
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="A room with this name already exists"
+            status_code=status.HTTP_409_CONFLICT,
+            detail="A room with this name already exists"
         )
 
 
@@ -113,23 +116,30 @@ def edit_room_services(room_id: int, room_edit: RoomEdit, session: Session):
     Return:
         returns the rooms details
     """
-    # If the floor, name, and capacity are not entered than return a HTTPException
+    # If the floor, name, and capacity are not entered
+    # then return a HTTPException
     if (
         room_edit.floor is None
         and room_edit.name is None
         and room_edit.capacity is None
     ):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No details provided")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No details provided"
+        )
 
     # Open a database session for the duration of the request.
     stmt = select(Room).where(Room.id == room_id)
     room_result = session.scalars(stmt).first()
     # Catches a exception in case the room id ,is not found
     if room_result is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The room id does not exist")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="The room id does not exist"
+        )
 
-    # App;y only the fileds that were provided.
-    for field, value in room_edit.model_dump(exclude=True).items():
+    # App;y only the fields that were provided.
+    for field, value in room_edit.model_dump(exclude_unset=True).items():
         setattr(room_result, field, value)
 
     # Check whether the values actually changed
