@@ -18,7 +18,8 @@ def login_services(
     User login route
 
     Args:
-        user_form: OAuth2PasswordRequestForm object containing username and password
+        user_form: OAuth2PasswordRequestForm object containing
+            username and password
         session: database session
 
     Returns:
@@ -48,7 +49,8 @@ def login_services(
             "access_token": token,
             "token_type": "bearer"
         }
-    
+
+
 def create_user_service(
     user: UserCreate,
     session: Session
@@ -96,4 +98,3 @@ def create_user_service(
         )
 
     return new_user
-
