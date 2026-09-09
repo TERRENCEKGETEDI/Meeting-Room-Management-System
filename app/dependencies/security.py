@@ -40,14 +40,14 @@ def password_validation(password: str):
             special_chars += 1
 
     if (
-        lower_cases < 3
+        lower_cases < 1
         or upper_cases < 1
         or num_digits < 1
         or special_chars < 1
     ):
         message = (
-            "Invalid password, at least 3 small letters, 1 capital letter, "
-            "1 digit, 1 special character and Must not contain spaces"
+            "Invalid password, at least 1 small letters, 1 capital letter, "
+            "1 digit, 1 special character"
         )
 
         raise HTTPException(
