@@ -65,12 +65,11 @@ def delete_room(
     return delete_room_service(room_id, session)
 
 
-@router.patch("/{room_id}", response_model=RoomResponse)
+@router.patch("/{room_id}", response_model=RoomResponse, dependencies=[RequireAdminDep])
 def edit_room(
     room_id: int,
     room_edit: RoomEdit,
-    session: Session = Depends(get_db),  # noqa: B008
-    current_user: str = Depends(require_admin),
+    session: SessionDep,
 ):
     """
     Edits the details of a room.
@@ -84,9 +83,8 @@ def edit_room(
     Return:
         returns the rooms details
     """
-    
 
-    return edit_room_services(room_id,room_edit,session)
+    return edit_room_services(room_id, room_edit, session)
 
 
 @router.post(
