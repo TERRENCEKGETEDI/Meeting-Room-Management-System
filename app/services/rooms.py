@@ -97,7 +97,6 @@ def add_room_service(room: RoomCreate, session: Session):
         return new_room
 
     except IntegrityError:
-        session.rollback()
 
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
