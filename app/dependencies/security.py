@@ -23,7 +23,6 @@ def password_validation(password: str):
     upper_cases = 0
     num_digits = 0
     special_chars = 0
-    contain_space = False
     if len(password) < 8:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -39,15 +38,12 @@ def password_validation(password: str):
             upper_cases += 1
         if not char.isalnum():
             special_chars += 1
-        if char.isspace():
-            contain_space = True
 
     if (
         lower_cases < 3
         or upper_cases < 1
         or num_digits < 1
         or special_chars < 1
-        or contain_space
     ):
         message = (
             "Invalid password, at least 3 small letters, 1 capital letter, "
