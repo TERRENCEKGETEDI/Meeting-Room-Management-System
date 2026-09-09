@@ -12,7 +12,6 @@ from app.models.roles import UserRole
 from app.models.user import User
 
 password_hash = PasswordHash.recommended()
-ADMIN_REQUIRED_STATUS = 403
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
@@ -106,7 +105,7 @@ def get_current_user(
 
     if username is None:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials"
         )
 

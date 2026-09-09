@@ -4,7 +4,7 @@
 > A meeting room management system application to assist our company to easily book meeting rooms.
 
 
-### Technologies🧑‍💻
+### Technologies‍
 - Python 3.14
 - FastAPI
 - Pydantic

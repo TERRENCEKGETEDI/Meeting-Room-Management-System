@@ -10,6 +10,7 @@ class RoomCreate(BaseModel):
         floor: the floor in which the room is
         capacity: max number of staff the room can hold
     """
+    model_config = ConfigDict(str_strip_whitespace=True)
 
     name: str = Field(min_length=1)
     floor: str = Field(min_length=1)

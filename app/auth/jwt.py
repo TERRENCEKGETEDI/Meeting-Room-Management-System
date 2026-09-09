@@ -39,7 +39,8 @@ def create_access_token(username: str):
 
     token = jwt.encode(
         payload,
-        SECRET_KEY, algorithm=ALGORITHM
+        SECRET_KEY,
+        algorithm=ALGORITHM
     )
 
     return token
@@ -48,16 +49,20 @@ def create_access_token(username: str):
 # decode access token,return payload
 def decode_access_token(token: str):
     """
-    decoddes a jwt(token)
+    decodes a jwt(token)
 
-    args:
-    token: recevies a encoded token
+    Args:
+        token: receives a encoded token
 
-    return:
-    the payload
+    Returns:
+        payload: the payload
     """
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
 
     except jwt.InvalidTokenError:
         raise HTTPException(
