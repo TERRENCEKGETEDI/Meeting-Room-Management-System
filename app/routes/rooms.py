@@ -48,7 +48,7 @@ def list_all_rooms(
         dependencies=[RequireAdminDep])
 def delete_room(
     room_id: int,
-    session: Annotated[Session, Depends(get_db)]
+    session: SessionDep
 ) -> dict[str, str]:
     """
     Delete room function for delete route
