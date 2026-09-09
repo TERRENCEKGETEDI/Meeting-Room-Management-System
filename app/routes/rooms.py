@@ -65,7 +65,11 @@ def delete_room(
     return delete_room_service(room_id, session)
 
 
-@router.patch("/{room_id}", response_model=RoomResponse, dependencies=[RequireAdminDep])
+@router.patch(
+        "/{room_id}",
+        response_model=RoomResponse,
+        dependencies=[RequireAdminDep]
+)
 def edit_room(
     room_id: int,
     room_edit: RoomEdit,
@@ -103,6 +107,7 @@ def add_room(
     Args:
        room: room details
         session: database session
+
     Returns:
         new_room:The created room
     """
