@@ -31,6 +31,7 @@ Meeting Room Management System
 │
 ├── .env
 ├── .gitignore
+├── .github/workflows/lint.yml
 ├── pyproject.toml
 ├── uv.lock
 └── README.md
@@ -83,6 +84,8 @@ Meeting Room Management System
 - delete a room
 - list room
 - list rooms by filtering with capacity
+- create/register user
+- login
 
 ### Get latest changes
 - To retrieve the latest changes from the main branch:
