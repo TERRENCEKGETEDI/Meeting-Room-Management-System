@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.dependencies.database import get_db
@@ -18,16 +18,18 @@ from app.services.rooms import (
 router = APIRouter(prefix="/rooms", tags=["Rooms"])
 
 RequireAdminDep = Depends(require_admin)
+GetCurrentUser = Depends(get_current_user)
 SessionDep = Annotated[Session, Depends(get_db)]
 
 
-@router.get("/",
-     response_model=list[RoomResponse],
-     dependencies = [Depends(get_current_user)] #authenticated users can view rooms.,
+@router.get(
+        "/",
+        response_model=list[RoomResponse],
+        dependencies=[GetCurrentUser]
 )
 def list_all_rooms(
     session: SessionDep,
-    min_capacity: Annotated[int | None , Query(gt=0)] = None
+    min_capacity: Annotated[int | None, Query(gt=0)] = None
 ):
     """
     Get a list of all rooms. Optionally filtered by minimum capacity
@@ -37,10 +39,10 @@ def list_all_rooms(
         min_capacity: Optional minimum room capacity
 
     Returns:
-        A list of all rooms , filtered by minimum capacity if provided
+        rooms: A list of all rooms , filtered by minimum capacity if provided
     """
 
-    return list_all_rooms_service(session,min_capacity)
+    return list_all_rooms_service(session, min_capacity)
 
 
 @router.delete(
@@ -87,12 +89,15 @@ def edit_room(
     return edit_room_services(room_id,room_edit,session)
 
 
-@router.post("/", response_model=RoomResponse,
-              status_code=201)
+@router.post(
+        "/",
+        response_model=RoomResponse,
+        status_code=status.HTTP_201_CREATED,
+        dependencies=[RequireAdminDep]
+)
 def add_room(
     room: RoomCreate,
-    session: Session = Depends(get_db),  # noqa: B008
-    current_user: str = Depends(require_admin),
+    session: SessionDep
 ):
     """
         Create a new meeting room.
@@ -100,7 +105,6 @@ def add_room(
     Args:
        room: room details
         session: database session
-        current_user: the current user making the request
     Returns:
         new_room:The created room
     """
